@@ -53,8 +53,6 @@ npm-debug.log
 ae_api_pc.sublime-workspace
 ae_api_mac.sublime-workspace
 
-pgDbPass.json
 dbPass.json
-appPass.json
 sftpPass.json
 coverage.html
