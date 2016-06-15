@@ -4,6 +4,7 @@
 
 'use strict'
 
+const createServer = require(`auto-sni`)
 const Hapi = require(`hapi`)
 const Inert = require(`inert`)
 const dbConnection = require(`./dbConnection.js`)
@@ -17,7 +18,20 @@ const serverOptionsDevelopment = {
   }
 }
 const server = new Hapi.Server(serverOptionsDevelopment)
-
+const secureServer = createServer({
+  email: `alex@gabriel-software.ch`, // Emailed when certificates expire.
+  agreeTos: true, // Required for letsencrypt.
+  debug: true, // Add console messages and uses staging LetsEncrypt server. (Disable in production)
+  domains: [`artliste.ch`], // List of accepted domain names. (You can use nested arrays to register bundles with LE).
+  forceSSL: true, // Make this false to disable auto http->https redirects (default true).
+  ports: {
+    http: 80, // Optionally override the default http port.
+    https: 443 // // Optionally override the default https port.
+  }
+})
+dbConnection.listener = secureServer
+dbConnection.autoListen = false
+dbConnection.tls = true
 server.connection(dbConnection)
 
 // non-Query routes hat to be separated
