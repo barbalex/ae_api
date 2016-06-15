@@ -4,8 +4,8 @@
   "description": "backend for arteigenschaften.ch",
   "main": "index.js",
   "scripts": {
-    "test": "eslint src/**",
     "start": "node startServer.js",
+    "test": "eslint src/**",
     "yolo": "gulp sftp_src && gulp sftp_top"
   },
   "repository": {
