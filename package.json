@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "eslint src/**",
-    "start": "node server.js",
+    "start": "node startServer.js",
     "yolo": "gulp sftp_src && gulp sftp_top"
   },
   "repository": {
@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/barbalex/ae_api#readme",
   "dependencies": {
-    "auto-sni": "^1.1.3",
+    "auto-sni": "1.1.3",
     "hapi": "13.4.1",
     "hapi-node-postgres": "3.0.2",
     "inert": "4.0.0",
