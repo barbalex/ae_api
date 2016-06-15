@@ -8,14 +8,14 @@ module.exports = (id) =>
       SELECT
         *
       FROM
-        ae.object
+        ae.object_property_collection
       WHERE
-        id = $1
+        object_id = $1
     `
-    app.db.one(sql, [id])
+    app.db.many(sql, [id])
       .then((data) => {
         if (data) return resolve(data)
-        reject(`no object received from db`)
+        reject(`no object_property_collections received from db`)
       })
       .catch((error) => reject(error))
   })
