@@ -4,11 +4,13 @@
 
 'use strict'
 
+const Boom = require(`boom`)
 const createServer = require(`auto-sni`)
 const Hapi = require(`hapi`)
 const Inert = require(`inert`)
 const dbConnection = require(`./dbConnection.js`)
 const pgPlugin = require(`./pgPlugin.js`)
+const secretKey = require(`./secretKey.js`)
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 const serverOptionsDevelopment = {
@@ -38,12 +40,21 @@ server.connection(dbConnection)
 // because when testing directory handler produces an error
 const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 
-server.register(Inert, (err) => {
-  if (err) console.log(`failed loading Inert plugin`)
-  server.register(pgPlugin, (error) => {
-    if (error) console.log(`failed loading pg plugin`)
-    // add all the routes
-    server.route(routes)
+server.register(Inert, (error1) => {
+  if (error1) console.log(`failed loading Inert plugin`)
+  server.register(pgPlugin, (error2) => {
+    if (error2) console.log(`failed loading pg plugin`)
+    server.register(require(`hapi-auth-jwt`), (error3) => {
+      if (error3) console.log(`failed loading hapi-auth-jwt plugin`)
+      // We're giving the strategy both a name
+      // and scheme of 'jwt'
+      server.auth.strategy(`jwt`, `jwt`, {
+        key: secretKey,
+        verifyOptions: { algorithms: [`HS256`] }
+      })
+      // add all the routes
+      server.route(routes)
+    })
   })
 })
 

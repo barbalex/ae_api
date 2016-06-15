@@ -56,3 +56,4 @@ ae_api_mac.sublime-workspace
 dbPass.json
 sftpPass.json
 coverage.html
+secretKey.js
