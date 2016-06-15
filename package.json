@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/barbalex/ae_api#readme",
   "dependencies": {
+    "ampersand-app": "2.0.0",
     "hapi": "13.4.1",
-    "hapi-node-postgres": "3.0.2",
     "inert": "4.0.0",
     "lodash": "4.13.1",
-    "pg": "4.5.3"
+    "pg-promise": "4.6.4"
   },
   "devDependencies": {
     "babel-eslint": "6.0.4",

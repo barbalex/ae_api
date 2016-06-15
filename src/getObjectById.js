@@ -1,6 +1,8 @@
 'use strict'
 
-module.exports = (db, id) =>
+const app = require(`ampersand-app`)
+
+module.exports = (id) =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
@@ -10,12 +12,10 @@ module.exports = (db, id) =>
       WHERE
         id = $1
     `
-    db.client.query(sql, [id], (error, result) => {
-      if (error) return reject(error)
-      if (result && result.rows && result.rows[0]) {
-        resolve(result.rows[0])
-      } else {
+    app.db.one(sql, [id])
+      .then((result) => {
+        if (result) return resolve(result)
         reject(`no object received from db`)
-      }
-    })
+      })
+      .catch((error) => reject(error))
   })

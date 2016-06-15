@@ -5,15 +5,14 @@ const getORCsByObjectId = require(`../src/getORCsByObjectId.js`)
 const escapeStringForSql = require(`../src/escapeStringForSql.js`)
 
 module.exports = (request, callback) => {
-  const db = request.pg
   const id = escapeStringForSql(request.params.id)
 
   const data = {}
 
-  getObjectById(db, id)
+  getObjectById(id)
     .then((object) => {
       data.object = object
-      return getORCsByObjectId(db, id)
+      return getORCsByObjectId(id)
     })
     .then((oRCs) => {
       data.oRCs = oRCs

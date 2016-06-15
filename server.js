@@ -8,7 +8,6 @@
 const Hapi = require(`hapi`)
 const Inert = require(`inert`)
 const dbConnection = require(`./dbConnection.js`)
-const pgPlugin = require(`./pgPlugin.js`)
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 const serverOptionsDevelopment = {
@@ -18,6 +17,7 @@ const serverOptionsDevelopment = {
   }
 }
 const server = new Hapi.Server(serverOptionsDevelopment)
+server.connection(dbConnection)
 /*const secureServer = createServer({
   email: `alex@gabriel-software.ch`, // Emailed when certificates expire.
   agreeTos: true, // Required for letsencrypt.
@@ -32,19 +32,15 @@ const server = new Hapi.Server(serverOptionsDevelopment)
 // dbConnection.listener = secureServer
 // dbConnection.autoListen = false
 // dbConnection.tls = true
-server.connection(dbConnection)
 
 // non-Query routes hat to be separated
 // because when testing directory handler produces an error
 const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 
-server.register(Inert, (error1) => {
-  if (error1) console.log(`failed loading Inert plugin`)
-  server.register(pgPlugin, (error2) => {
-    if (error2) console.log(`failed loading pg plugin`)
-    // add all the routes
-    server.route(routes)
-  })
+server.register(Inert, (error) => {
+  if (error) console.log(`failed loading Inert plugin`)
+  // add all the routes
+  server.route(routes)
 })
 
 module.exports = server
