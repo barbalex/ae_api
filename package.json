@@ -1,10 +1,10 @@
 {
   "name": "ae_api",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "backend for arteigenschaften.ch",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js",
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,27 @@
   "bugs": {
     "url": "https://github.com/barbalex/ae_api/issues"
   },
-  "homepage": "https://github.com/barbalex/ae_api#readme"
+  "homepage": "https://github.com/barbalex/ae_api#readme",
+  "dependencies": {
+    "lodash": "4.13.1",
+    "node-fetch": "1.5.3",
+    "node-uuid": "1.4.7",
+    "hapi": "13.4.1",
+    "hapi-node-postgres": "3.0.2",
+    "inert": "4.0.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "6.0.4",
+    "eslint": "2.12.0",
+    "eslint-config-airbnb": "9.0.1",
+    "eslint-plugin-import": "1.8.1",
+    "eslint-plugin-jsx-a11y": "1.4.2",
+    "code": "3.0.0",
+    "del": "2.2.0",
+    "gulp": "3.9.1",
+    "gulp-sftp": "0.1.5",
+    "lab": "10.7.1",
+    "require-dir": "0.3.0",
+    "run-sequence": "1.2.1"
+  }
 }
