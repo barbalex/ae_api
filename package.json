@@ -30,11 +30,11 @@
     "eslint-config-airbnb": "9.0.1",
     "eslint-plugin-import": "1.8.1",
     "eslint-plugin-jsx-a11y": "1.4.2",
-    "code": "3.0.0",
+    "code": "3.0.1",
     "del": "2.2.0",
     "gulp": "3.9.1",
     "gulp-sftp": "0.1.5",
-    "lab": "10.7.1",
+    "lab": "10.8.2",
     "require-dir": "0.3.0",
     "run-sequence": "1.2.1"
   }
