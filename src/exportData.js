@@ -5,10 +5,9 @@
  * returns export data
  */
 
-const PouchDB = require('pouchdb')
-const couchUrl = require('./getCouchUrl.js')
-
 module.exports = (request, callback) => {
+  return null
+  /*
   const {
     exportOptions,
     onlyObjectsWithCollectionData,
@@ -28,4 +27,5 @@ module.exports = (request, callback) => {
     .then((doc) => callback(null, doc.roles))
     // inform caller of error
     .catch((error) => callback(error, null))
+  */
 }

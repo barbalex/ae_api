@@ -1,6 +1,6 @@
 'use strict'
 
-const exportData = require(`../src/exportData.js`)
+const exportData = require(`../exportData.js`)
 
 module.exports = {
   method: `GET`,
