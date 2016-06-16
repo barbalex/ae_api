@@ -51,6 +51,7 @@
 const getObjectById = require(`../src/getObjectById.js`)
 const getRelationCollectionsByObject = require(`../src/getRelationCollectionsByObject.js`)
 const getPropertyCollectionsByObject = require(`../src/getPropertyCollectionsByObject.js`)
+const getTaxonomiesByObject = require(`../src/getTaxonomiesByObject.js`)
 const escapeStringForSql = require(`../src/escapeStringForSql.js`)
 
 module.exports = (request, callback) => {
@@ -68,6 +69,10 @@ module.exports = (request, callback) => {
     })
     .then((propertyCollections) => {
       object.propertyCollections = propertyCollections
+      return getTaxonomiesByObject(id)
+    })
+    .then((taxonomies) => {
+      object.taxonomies = taxonomies
       return
     })
     .then(() => callback(null, object))
