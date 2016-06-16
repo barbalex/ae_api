@@ -8,5 +8,6 @@ Es ist noch im Aufbau. Künftig soll es enhalten:
 
 * einen Webserver (hapi.js)
 * Schnittstellen für arteigenschaften.ch
-  * Inklusive Schnittstellen, um Rollen von usern zu ändern, wenn Organisationen ihnen Rechte erteilen
+  * um Daten zu beziehen und zu verändern
+  * damit Organisationen Rechte von Benutzern verwalten können
 * Schnittstellen für andere Anwendungen (EvAB, ALT, apflora.ch)
