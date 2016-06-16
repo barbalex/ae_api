@@ -4,7 +4,8 @@
   "description": "backend for arteigenschaften.ch",
   "main": "index.js",
   "scripts": {
-    "start": "node startServer.js",
+    "dev": "set NODE_ENV=development&& node startServer.js",
+    "start": "sudo setcap cap_net_bind_service=+ep $(which node) && set NODE_ENV=production && node startServer.js",
     "test": "eslint src/**",
     "yolo": "gulp sftp_src && gulp sftp_top"
   },

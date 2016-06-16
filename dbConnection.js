@@ -1,9 +1,14 @@
 'use strict'
 
-module.exports = {
-  host: `0.0.0.0`,
-  port: 8000,
-  routes: {
-    cors: true
+module.exports = () => {
+  const connection = {
+    host: `0.0.0.0`,
+    routes: {
+      cors: true
+    }
   }
+  if (process.env.NODE_ENV === `development`) {
+    connection.port = 8000
+  }
+  return connection
 }
