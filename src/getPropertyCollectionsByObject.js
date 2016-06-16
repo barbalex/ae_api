@@ -7,11 +7,11 @@ module.exports = (id) =>
     const sql = `
       SELECT
         ae.property_collection.*,
-        ae.object_property_collection.properties
+        ae.property_collection_object.properties
       FROM
-        ae.object_property_collection
+        ae.property_collection_object
         INNER JOIN ae.property_collection
-        ON property_collection.id = ae.object_property_collection.property_collection_id
+        ON property_collection.id = ae.property_collection_object.property_collection_id
       WHERE
         object_id = $1
     `

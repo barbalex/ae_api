@@ -32,6 +32,18 @@
  *     }
  *   ],
  *   propertyCollections: [
+ *     {
+ *       id: xxx,
+ *       name: xxx,
+ *       description: xxx,
+ *       links: xxx,
+ *       combining: xxx,
+ *       organization_id: xxx,
+ *       last_updated: xxx,
+ *       terms_of_use: xxx,
+ *       imported_by: xxx,
+ *       properties: xxx
+ *     }
  *   ]
  * }
  */
