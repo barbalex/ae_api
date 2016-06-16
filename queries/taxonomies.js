@@ -1,5 +1,6 @@
 'use strict'
 
+const Boom = require(`boom`)
 const getTaxonomies = require(`../src/getTaxonomies.js`)
 
 module.exports = (request, callback) => {
@@ -8,7 +9,9 @@ module.exports = (request, callback) => {
       if (taxonomies && taxonomies.length) {
         return callback(null, taxonomies)
       }
-      callback(`no taxonomies received`)
+      throw `no taxonomies received`  /* eslint no-throw-literal:0 */
     })
-    .catch((error) => callback(error, null))
+    .catch((error) =>
+      callback(Boom.badImplementation(error), null)
+    )
 }

@@ -63,6 +63,7 @@
  * }
  */
 
+const Boom = require(`boom`)
 const getObjectById = require(`../src/getObjectById.js`)
 const getRelationCollectionsByObject = require(`../src/getRelationCollectionsByObject.js`)
 const getPropertyCollectionsByObject = require(`../src/getPropertyCollectionsByObject.js`)
@@ -91,5 +92,5 @@ module.exports = (request, callback) => {
       return
     })
     .then(() => callback(null, object))
-    .catch((error) => callback(error, null))
+    .catch((error) => callback(Boom.badImplementation(error), null))
 }
