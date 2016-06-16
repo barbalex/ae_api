@@ -44,6 +44,21 @@
  *       imported_by: xxx,
  *       properties: xxx
  *     }
+ *   ],
+ *   taxonomies: [
+ *     {
+ *       id: xxx,
+ *       taxonomy_name: xxx,
+ *       description: xxx,
+ *       links: xxx,
+ *       last_updated: xxx,
+ *       organization_id: xxx,
+ *       category: xxx,
+ *       is_category_standard: xxx,
+ *       parent_id: xxx,
+ *       object_name: xxx,
+ *       properties: xxx
+ *     }
  *   ]
  * }
  */
