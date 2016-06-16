@@ -21,7 +21,9 @@
   "homepage": "https://github.com/barbalex/ae_api#readme",
   "dependencies": {
     "ampersand-app": "2.0.0",
+    "bcrypt": "0.8.7",
     "hapi": "13.4.1",
+    "hapi-auth-jwt": "4.0.0",
     "inert": "4.0.0",
     "lodash": "4.13.1",
     "pg-promise": "4.6.4"

@@ -7,6 +7,7 @@
 const Hapi = require(`hapi`)
 const Inert = require(`inert`)
 const dbConnection = require(`./dbConnection.js`)()
+const secretKey = require(`./secretKey.js`)
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 let serverOptions = {
@@ -47,8 +48,16 @@ const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 
 server.register(Inert, (error) => {
   if (error) console.log(`failed loading Inert plugin`)
-  // add all the routes
-  server.route(routes)
+  server.register(require(`hapi-auth-jwt`), (error2) => {
+    // We're giving the strategy both a name
+    // and scheme of `jwt`
+    server.auth.strategy(`jwt`, `jwt`, {
+      key: secretKey,
+      verifyOptions: { algorithms: [`HS256`] }
+    })
+    // add all the routes
+    server.route(routes)
+  })
 })
 
 module.exports = server
