@@ -1,12 +1,15 @@
 'use strict'
 
 const app = require(`ampersand-app`)
+const getRelationPartnersByRelation = require(`./getRelationPartnersByRelation.js`)
 
 module.exports = (object_id, relation_collection_id) =>
   new Promise((resolve, reject) => {
+    let relations
     const sql = `
       SELECT
-        *
+        id,
+        properties
       FROM
         ae.relation
       WHERE
@@ -15,8 +18,21 @@ module.exports = (object_id, relation_collection_id) =>
     `
     app.db.many(sql, [object_id, relation_collection_id])
       .then((data) => {
-        if (data) return resolve(data)
-        reject(`no relations received from db`)
+        if (data) {
+          relations = data
+        } else {
+          return reject(`no relations received from db`)
+        }
+        return Promise.all(relations.map((relation) =>
+          getRelationPartnersByRelation(relation.id))
+        )
+      })
+      .then((relationPartnersArray) => {
+        relations = relations.map((relation, index) => {
+          relation.relationPartners = relationPartnersArray[index]
+          return relation
+        })
+        resolve(relations)
       })
       .catch((error) => reject(error))
   })

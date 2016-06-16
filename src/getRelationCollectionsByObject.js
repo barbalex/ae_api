@@ -5,10 +5,10 @@ const getRelationsByORC = require(`./getRelationsByORC.js`)
 
 module.exports = (object_id) =>
   new Promise((resolve, reject) => {
-    let oRCs
+    let relationCollections
     const sql = `
       SELECT
-        ae.object_relation_collection.*,
+        ae.object_relation_collection.relation_collection_id,
         ae.relation_collection.*
       FROM
         ae.object_relation_collection
@@ -20,20 +20,21 @@ module.exports = (object_id) =>
     app.db.many(sql, [object_id])
       .then((data) => {
         if (data) {
-          oRCs = data
+          relationCollections = data
         } else {
           return reject(`no object_relation_collections received from db`)
         }
-        return Promise.all(oRCs.map((oRC) =>
+        return Promise.all(relationCollections.map((oRC) =>
           getRelationsByORC(object_id, oRC.relation_collection_id))
         )
       })
       .then((relationsArray) => {
-        oRCs = oRCs.map((oRC, index) => {
+        relationCollections = relationCollections.map((oRC, index) => {
+          delete oRC.relation_collection_id
           oRC.relations = relationsArray[index]
           return oRC
         })
-        resolve(oRCs)
+        resolve(relationCollections)
       })
       .catch((error) => reject(error))
   })
