@@ -5,7 +5,7 @@
 'use strict'
 
 const config = {}
-const dbPass = require(`./dbPass.json`)
+const dbPass = require('./dbPass.json')
 
 config.db = {}
 config.pg = {}
