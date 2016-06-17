@@ -1,6 +1,7 @@
 'use strict'
 
 const app = require(`ampersand-app`)
+const bcrypt = require(`bcrypt`)
 
 module.exports = (name, password) =>
   new Promise((resolve, reject) => {
@@ -16,9 +17,15 @@ module.exports = (name, password) =>
         name = $1
     `
     app.db.one(sql, [name])
-      .then((data) => {
-        if (!data) return reject(`no user received from db`)
-
+      .then((user) => {
+        if (!user) return resolve()
+        bcrypt.compare(password, user.password, (err, isValid) => {
+        if (isValid) {
+          res(user);
+        }
+        else {
+          res(Boom.badRequest('Incorrect password!'));
+        }
         resolve(data)
       })
       .catch((error) => reject(error))
