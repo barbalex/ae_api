@@ -1,7 +1,7 @@
 'use strict'
 
-const app = require(`ampersand-app`)
-const getRelationsByORC = require(`./getRelationsByORC.js`)
+const app = require('ampersand-app')
+const getRelationsByORC = require('./getRelationsByORC.js')
 
 module.exports = (object_id) =>
   new Promise((resolve, reject) => {
