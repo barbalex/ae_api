@@ -5,12 +5,12 @@ const login = require(`../handlers/login.js`)
 
 module.exports = {
   method: `POST`,
-  path: `/login`,
+  path: `/login/{name}/{password}`,
   handler: login,
   config: {
     validate: {
-      payload: {
-        email: Joi.string().email().required(),
+      params: {
+        email: Joi.string().min(2).max(200).required(),
         password: Joi.string().min(2).max(200).required()
       }
     }

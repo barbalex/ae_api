@@ -21,13 +21,9 @@ module.exports = (name, password) =>
         if (!user) return resolve()
         bcrypt.compare(password, user.password, (err, isValid) => {
         if (isValid) {
-          res(user);
+          return resolve(user);
         }
-        else {
-          res(Boom.badRequest('Incorrect password!'));
-        }
-        resolve(data)
+        resolve()
       })
       .catch((error) => reject(error))
   })
-
