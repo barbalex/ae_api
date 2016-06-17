@@ -1,7 +1,7 @@
 'use strict'
 
-const Joi = require(`joi`)
-const objectById = require(`../handlers/objectById.js`)
+const Joi = require('joi')
+const objectById = require('../handlers/objectById.js')
 
 module.exports = {
   method: `GET`,
