@@ -63,12 +63,12 @@
  * }
  */
 
-const Boom = require(`boom`)
-const getObjectById = require(`../getObjectById.js`)
-const getRelationCollectionsByObject = require(`../getRelationCollectionsByObject.js`)
-const getPropertyCollectionsByObject = require(`../getPropertyCollectionsByObject.js`)
-const getTaxonomiesByObject = require(`../getTaxonomiesByObject.js`)
-const escapeStringForSql = require(`../escapeStringForSql.js`)
+const Boom = require('boom')
+const getObjectById = require('../getObjectById.js')
+const getRelationCollectionsByObject = require('../getRelationCollectionsByObject.js')
+const getPropertyCollectionsByObject = require('../getPropertyCollectionsByObject.js')
+const getTaxonomiesByObject = require('../getTaxonomiesByObject.js')
+const escapeStringForSql = require('../escapeStringForSql.js')
 
 module.exports = (request, reply) => {
   const id = escapeStringForSql(request.params.id)

@@ -1,6 +1,6 @@
 'use strict'
 
-const app = require(`ampersand-app`)
+const app = require('ampersand-app')
 
 module.exports = (object_id) =>
   new Promise((resolve, reject) => {

@@ -1,10 +1,12 @@
 'use strict'
 
-const Boom = require(`boom`)
-const verifyUser = require(`../src/verifyUser.js`)
+const Boom = require('boom')
+const verifyUser = require('../verifyUser.js')
 
 module.exports = (request, reply) => {
   const { name, password } = request.params
+  console.log(`name`, name)
+  console.log(`password`, password)
   verifyUser(name, password)
     .then((user) => {
       if (!user) {
