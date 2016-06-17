@@ -4,10 +4,10 @@
 
 'use strict'
 
-const Hapi = require(`hapi`)
-const Inert = require(`inert`)
-const dbConnection = require(`./dbConnection.js`)()
-const secretKey = require(`./secretKey.js`)
+const Hapi = require('hapi')
+const Inert = require('inert')
+const dbConnection = require('./dbConnection.js')()
+const secretKey = require('./secretKey.js')
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 let serverOptions = {
@@ -49,6 +49,7 @@ const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 server.register(Inert, (error) => {
   if (error) console.log(`failed loading Inert plugin`)
   server.register(require(`hapi-auth-cookie`), (error2) => {
+    if (error2) console.log(`failed loading hapi-auth-cookie plugin`)
     server.auth.strategy(`base`, `cookie`, {
       password: secretKey,
       cookie: `arteigenschaften-cookie`,

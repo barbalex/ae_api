@@ -4,7 +4,7 @@
 
 'use strict'
 
-var gulp = require('gulp')
+const gulp = require('gulp')
 var sftp = require('gulp-sftp')
 var requireDir = require('require-dir')
 var sftpPass = require('../sftpPass.json')
