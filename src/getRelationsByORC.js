@@ -1,7 +1,7 @@
 'use strict'
 
-const app = require(`ampersand-app`)
-const getRelationPartnersByRelation = require(`./getRelationPartnersByRelation.js`)
+const app = require('ampersand-app')
+const getRelationPartnersByRelation = require('./getRelationPartnersByRelation.js')
 
 module.exports = (object_id, relation_collection_id) =>
   new Promise((resolve, reject) => {
