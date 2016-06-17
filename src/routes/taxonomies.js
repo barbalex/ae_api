@@ -1,6 +1,6 @@
 'use strict'
 
-const taxonomies = require(`../../queries/taxonomies.js`)
+const taxonomies = require(`../handlers/taxonomies.js`)
 
 module.exports = {
   method: `GET`,
