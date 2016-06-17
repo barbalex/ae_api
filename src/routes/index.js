@@ -4,8 +4,8 @@
  * Module dependencies
  * from: http://stackoverflow.com/questions/27766623/how-to-store-routes-in-separate-files-when-using-hapi
  */
-const fs = require(`fs`)
-const path = require(`path`)
+const fs = require('fs')
+const path = require('path')
 const basename = path.basename(__filename)
 
 const arrayOfRouteArrays = fs.readdirSync(__dirname)

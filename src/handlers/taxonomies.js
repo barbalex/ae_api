@@ -1,7 +1,7 @@
 'use strict'
 
-const Boom = require(`boom`)
-const getTaxonomies = require(`../getTaxonomies.js`)
+const Boom = require('boom')
+const getTaxonomies = require('../getTaxonomies.js')
 
 module.exports = (request, reply) => {
   getTaxonomies()
