@@ -1,6 +1,6 @@
 'use strict'
 
-var gulp = require('gulp')
+const gulp = require('gulp')
 
 gulp.task('prod_copy_root_to_dist', function () {
   return gulp.src([
