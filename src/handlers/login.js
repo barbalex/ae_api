@@ -9,7 +9,7 @@ module.exports = (request, reply) => {
         request.auth.session.set(user)
         return reply(`Login Successful!`)
       }
-      return reply(Boom.unauthorized(`Bad email or password`))
+      return reply(Boom.unauthorized(`Ungültiger Name oder Passwort`))
     })
     .catch(() => reply(Boom.badImplementation()))
 }
