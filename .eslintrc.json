@@ -4,10 +4,6 @@
   "env": {
     "node": true
   },
-  "globals": {
-    "emit": true,
-    "doc": true
-  },
   "plugins": [
       "react"
   ],

@@ -1,0 +1,5 @@
+{
+  "rules": {
+    "new-line-per-chained-call": 0
+  }
+}

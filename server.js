@@ -48,12 +48,11 @@ const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 
 server.register(Inert, (error) => {
   if (error) console.log(`failed loading Inert plugin`)
-  server.register(require(`hapi-auth-jwt`), (error2) => {
-    // We're giving the strategy both a name
-    // and scheme of `jwt`
-    server.auth.strategy(`jwt`, `jwt`, {
-      key: secretKey,
-      verifyOptions: { algorithms: [`HS256`] }
+  server.register(require(`hapi-auth-cookie`), (error2) => {
+    server.auth.strategy(`base`, `cookie`, {
+      password: secretKey,
+      cookie: `arteigenschaften-cookie`,
+      ttl: 24 * 60 * 60 * 1000 // set session to 1 day
     })
     // add all the routes
     server.route(routes)

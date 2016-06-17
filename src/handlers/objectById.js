@@ -70,7 +70,7 @@ const getPropertyCollectionsByObject = require(`../getPropertyCollectionsByObjec
 const getTaxonomiesByObject = require(`../getTaxonomiesByObject.js`)
 const escapeStringForSql = require(`../escapeStringForSql.js`)
 
-module.exports = (request, callback) => {
+module.exports = (request, reply) => {
   const id = escapeStringForSql(request.params.id)
   let object
 
@@ -91,6 +91,6 @@ module.exports = (request, callback) => {
       object.taxonomies = taxonomies
       return
     })
-    .then(() => callback(null, object))
-    .catch((error) => callback(Boom.badImplementation(error), null))
+    .then(() => reply(null, object))
+    .catch((error) => reply(Boom.badImplementation(error), null))
 }
