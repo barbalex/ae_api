@@ -4,10 +4,10 @@
 
 'use strict'
 
-const app = require(`ampersand-app`)
-const server = require(`./server.js`)
-const pgp = require(`pg-promise`)()
-const config = require(`./configuration.js`)
+const app = require('ampersand-app')
+const server = require('./server.js')
+const pgp = require('pg-promise')()
+const config = require('./configuration.js')
 
 server.start((err) => {
   if (err) throw err
