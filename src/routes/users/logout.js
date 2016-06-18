@@ -1,6 +1,6 @@
 'use strict'
 
-const logout = require('../../handlers/usersLogout.js')
+const logout = require('../../handlers/users/logout.js')
 
 module.exports = {
   method: `GET`,

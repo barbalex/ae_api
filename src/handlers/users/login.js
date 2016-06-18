@@ -1,15 +1,14 @@
 'use strict'
 
 const Boom = require('boom')
-const verifyUser = require('../verifyUser.js')
+const verifyUser = require('../../verifyUser.js')
 
 module.exports = (request, reply) => {
   const { name, password } = request.payload
-  console.log(`name`, name)
-  console.log(`password`, password)
   verifyUser(name, password)
     .then((user) => {
-      if (!user) {
+      console.log('login.js, user', user)
+      if (user === null || !Object.keys(user).length) {
         return reply(Boom.unauthorized(`Ungültiger Name oder Passwort`))
       }
       delete user.password

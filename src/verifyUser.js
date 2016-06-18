@@ -18,12 +18,12 @@ module.exports = (name, password) =>
     `
     app.db.one(sql, [name])
       .then((user) => {
-        if (!user) return resolve()
+        if (!Object.keys(user)) return resolve()
         bcrypt.compare(password, user.password, (err, isValid) => {
           if (isValid) {
             return resolve(user)
           }
-          resolve()
+          resolve(null)
         })
       })
       .catch((error) => reject(error))

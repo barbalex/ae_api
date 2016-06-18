@@ -1,11 +1,11 @@
 'use strict'
 
-const logout = require('../../handlers/usersLogout.js')
+const users = require('../../handlers/users/users.js')
 
 module.exports = {
   method: `GET`,
   path: `/users`,
-  handler: logout,
+  handler: users,
   config: {
     auth: {
       strategy: `base`,
