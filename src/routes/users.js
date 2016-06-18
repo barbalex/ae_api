@@ -8,8 +8,11 @@ module.exports = {
   handler: logout,
   config: {
     auth: {
-      strategy: `cookie`,
+      strategy: `base`,
       scope: [`admin`]
+    },
+    plugins: {
+      lout: false
     }
   }
 }
