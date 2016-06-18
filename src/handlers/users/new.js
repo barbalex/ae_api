@@ -2,31 +2,32 @@
 
 const app = require('ampersand-app')
 const Boom = require('boom')
-const getUsers = require('../../getUsers.js')
+const uuid = require(`node-uuid`)
 const hashPassword = require('../../hashPassword.js')
 
 module.exports = (request, reply) => {
   const { name, email, password } = request.payload
-  const admin = false
 
   hashPassword(password, (error, hash) => {
     if (error) throw Boom.badRequest(error)
-    const user = {
-      name,
-      email,
-      password: hash
-    }
+    const sql = `
+      INSERT INTO ae.user (name,email,password)
+      VALUES ('${name}','${email}','${hash}')
+    `
     // save user in db
+    app.db.none(sql)
+      .then((user) => {
+        // build session id
+        const sid = uuid.v4()
+        console.log('request.server.app', request.server.app)
+        console.log('request.state', request.state)
+        request.server.app.cache.set(sid, user, 0, (error2) => {
+          if (error2) reply(error2)
+          reply(request.cookieAuth.set({ sid })).code(201)
+        })
+      })
+      .catch((error3) =>
+        reply(Boom.badImplementation(error3), null)
+      )
   })
-
-  getUsers()
-    .then((users) => {
-      if (users && users.length) {
-        return reply(null, users)
-      }
-      throw `no users received`  /* eslint no-throw-literal:0 */
-    })
-    .catch((error) =>
-      reply(Boom.badImplementation(error), null)
-    )
 }
