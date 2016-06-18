@@ -6,6 +6,7 @@
 
 const Hapi = require('hapi')
 const Inert = require('inert')
+const HapiAuthCookie = require('hapi-auth-cookie')
 const dbConnection = require('./dbConnection.js')()
 const secretKey = require('./secretKey.js')
 // wird nur in Entwicklung genutzt
@@ -46,18 +47,15 @@ server.connection(dbConnection)
 // because when testing directory handler produces an error
 const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 
-server.register(Inert, (error) => {
-  if (error) console.log(`failed loading Inert plugin`)
-  server.register(require(`hapi-auth-cookie`), (error2) => {
-    if (error2) console.log(`failed loading hapi-auth-cookie plugin`)
-    server.auth.strategy(`base`, `cookie`, {
-      password: secretKey,
-      cookie: `arteigenschaften-cookie`,
-      ttl: 24 * 60 * 60 * 1000 // set session to 1 day
-    })
-    // add all the routes
-    server.route(routes)
+server.register([Inert, HapiAuthCookie], (error) => {
+  if (error) console.log(`failed loading server plugins`)
+  server.auth.strategy(`base`, `cookie`, {
+    password: secretKey,
+    cookie: `ae-cookie`,
+    ttl: 24 * 60 * 60 * 1000 // set session to 1 day
   })
+  // add all the routes
+  server.route(routes)
 })
 
 module.exports = server
