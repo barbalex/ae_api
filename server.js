@@ -56,7 +56,7 @@ const loutConfig = {
 
 server.register([Inert, HapiAuthCookie, Vision, loutConfig], (error) => {
   if (error) console.log(`failed loading server plugins`)
-  server.auth.strategy(`base`, `cookie`, {
+  server.auth.strategy(`base`, `cookie`, true, {
     password: secretKey,
     cookie: `ae-cookie`,
     ttl: 24 * 60 * 60 * 1000 // set session to 1 day

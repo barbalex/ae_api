@@ -32,6 +32,7 @@
     "lout": "^9.0.1",
     "node-uuid": "^1.4.7",
     "pg-promise": "4.7.0",
+    "uuid": "^2.0.2",
     "vision": "^4.1.0"
   },
   "devDependencies": {

@@ -25,7 +25,7 @@ module.exports = (request, reply) => {
         reply(Boom.badRequest('Die Email-Adresse wird schon verwendet'))
       } else {
         /**
-         * If everything checks out, send the payload through
+         * everything checks out, so send the payload through
          * to the route handler
          */
         reply(request.payload)

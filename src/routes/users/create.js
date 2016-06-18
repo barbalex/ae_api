@@ -2,12 +2,12 @@
 
 const Joi = require('joi')
 const verifyUniqueUser = require('../../verifyUniqueUser.js')
-const newUser = require('../../handlers/users/new.js')
+const createUser = require('../../handlers/users/create.js')
 
 module.exports = {
   method: `POST`,
   path: `/users`,
-  handler: newUser,
+  handler: createUser,
   config: {
     pre: [
       { method: verifyUniqueUser }
