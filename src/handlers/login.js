@@ -4,7 +4,7 @@ const Boom = require('boom')
 const verifyUser = require('../verifyUser.js')
 
 module.exports = (request, reply) => {
-  const { name, password } = request.params
+  const { name, password } = request.payload
   console.log(`name`, name)
   console.log(`password`, password)
   verifyUser(name, password)
