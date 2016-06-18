@@ -19,6 +19,8 @@ module.exports = (request, reply) => {
       .then((user) => {
         // build session id
         const sid = uuid.v4()
+        // TODO: Error because request.server.app.cache does not exist!
+        // search how to set cookie session in hapi
         console.log('request.server.app', request.server.app)
         console.log('request.state', request.state)
         request.server.app.cache.set(sid, user, 0, (error2) => {
