@@ -1,7 +1,7 @@
 'use strict'
 
 const Joi = require('joi')
-const login = require('../handlers/usersLogin.js')
+const login = require('../../handlers/usersLogin.js')
 
 module.exports = {
   method: `POST`,

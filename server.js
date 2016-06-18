@@ -9,6 +9,8 @@ const Inert = require('inert')
 const Vision = require('vision')
 const Lout = require('lout')
 const HapiAuthCookie = require('hapi-auth-cookie')
+const glob = require('glob')
+const path = require('path')
 const dbConnection = require('./dbConnection.js')()
 const secretKey = require('./secretKey.js')
 // wird nur in Entwicklung genutzt
@@ -45,10 +47,6 @@ if (process.env.NODE_ENV === `production`) {
 const server = new Hapi.Server(serverOptions)
 server.connection(dbConnection)
 
-// non-Query routes hat to be separated
-// because when testing directory handler produces an error
-const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
-
 const loutConfig = {
   register: Lout,
   options: {
@@ -64,7 +62,14 @@ server.register([Inert, HapiAuthCookie, Vision, loutConfig], (error) => {
     ttl: 24 * 60 * 60 * 1000 // set session to 1 day
   })
   // add all the routes
-  server.route(routes)
+  glob.sync(`src/routes/**/*.js`, { root: __dirname }).forEach((file) =>
+    server.route(require(path.join(__dirname, file)))
+  )
+  // non-Query routes hat to be separated
+  // because when testing directory handler produces an error
+  glob.sync(`src/nonQueryRoutes/**/*.js`, { root: __dirname }).forEach((file) =>
+    server.route(require(path.join(__dirname, file)))
+  )
 })
 
 module.exports = server
