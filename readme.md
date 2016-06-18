@@ -11,3 +11,7 @@ Es ist noch im Aufbau. Künftig soll es enhalten:
   * um Daten zu beziehen und zu verändern
   * damit Organisationen Rechte von Benutzern verwalten können
 * Schnittstellen für andere Anwendungen (EvAB, ALT, apflora.ch)
+
+## Features:
+
+* unter [http://arteigenschaften.ch/api](http://arteigenschaften.ch/api) ist die vollständige API dokumentiert (erst nutzbar, wenn dieses Projekt live ist) 
