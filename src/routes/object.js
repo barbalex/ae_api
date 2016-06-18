@@ -12,6 +12,7 @@ module.exports = {
       params: {
         id: Joi.string().guid()
       }
-    }
+    },
+    notes: `let us test this`
   }
 }

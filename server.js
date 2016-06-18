@@ -6,6 +6,8 @@
 
 const Hapi = require('hapi')
 const Inert = require('inert')
+const Vision = require('vision')
+const Lout = require('lout')
 const HapiAuthCookie = require('hapi-auth-cookie')
 const dbConnection = require('./dbConnection.js')()
 const secretKey = require('./secretKey.js')
@@ -47,7 +49,14 @@ server.connection(dbConnection)
 // because when testing directory handler produces an error
 const routes = require(`./src/routes`).concat(require(`./src/nonQueryRoutes`))
 
-server.register([Inert, HapiAuthCookie], (error) => {
+const loutConfig = {
+  register: Lout,
+  options: {
+    endpoint: `api`
+  }
+}
+
+server.register([Inert, HapiAuthCookie, Vision, loutConfig], (error) => {
   if (error) console.log(`failed loading server plugins`)
   server.auth.strategy(`base`, `cookie`, {
     password: secretKey,

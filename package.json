@@ -28,7 +28,9 @@
     "inert": "4.0.0",
     "joi": "8.4.2",
     "lodash": "4.13.1",
-    "pg-promise": "4.7.0"
+    "lout": "^9.0.1",
+    "pg-promise": "4.7.0",
+    "vision": "^4.1.0"
   },
   "devDependencies": {
     "babel-eslint": "6.0.4",
