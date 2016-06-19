@@ -2,11 +2,13 @@
 
 const bcrypt = require('bcrypt')
 
-module.exports = (password, cb) => {
-  bcrypt.genSalt(10, (error, salt) => {
-    if (error) return cb(error, null)
-    bcrypt.hash(password, salt, (err, hash) =>
-      cb(err, hash)
-    )
+module.exports = (password) =>
+  new Promise((resolve, reject) => {
+    bcrypt.genSalt(10, (error, salt) => {
+      if (error) return reject(error)
+      bcrypt.hash(password, salt, (error2, hash) => {
+        if (error2) return reject(error2)
+        resolve(hash)
+      })
+    })
   })
-}
