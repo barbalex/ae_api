@@ -4,7 +4,7 @@
   "description": "backend for arteigenschaften.ch",
   "main": "index.js",
   "scripts": {
-    "dev": "set NODE_ENV=development&& node startServer.js",
+    "dev": "set NODE_ENV=development&& nodemon startServer.js",
     "start": "sudo setcap cap_net_bind_service=+ep $(which node) && set NODE_ENV=production && node startServer.js",
     "test": "eslint src/**",
     "yolo": "gulp sftp_src && gulp sftp_top"
@@ -37,16 +37,17 @@
   },
   "devDependencies": {
     "babel-eslint": "6.0.4",
+    "code": "3.0.1",
+    "del": "2.2.0",
     "eslint": "2.13.0",
     "eslint-config-airbnb": "9.0.1",
     "eslint-plugin-import": "1.8.1",
     "eslint-plugin-jsx-a11y": "1.5.3",
     "eslint-plugin-react": "5.2.2",
-    "code": "3.0.1",
-    "del": "2.2.0",
     "gulp": "3.9.1",
     "gulp-sftp": "0.1.5",
     "lab": "10.8.2",
+    "nodemon": "^1.9.2",
     "require-dir": "0.3.0",
     "run-sequence": "1.2.1"
   }

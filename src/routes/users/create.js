@@ -18,6 +18,7 @@ module.exports = {
         email: Joi.string().email().required(),
         password: Joi.string().min(2).max(200).required()
       }
-    }
+    },
+    auth: false
   }
 }

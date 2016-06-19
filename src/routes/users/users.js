@@ -8,7 +8,7 @@ module.exports = {
   handler: users,
   config: {
     auth: {
-      strategy: `base`,
+      strategy: `session`,
       scope: [`admin`]
     },
     plugins: {

@@ -13,6 +13,7 @@ module.exports = {
         name: Joi.string().min(2).max(200).required(),
         password: Joi.string().min(2).max(200).required()
       }
-    }
+    },
+    auth: false
   }
 }

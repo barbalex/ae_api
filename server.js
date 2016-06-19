@@ -12,7 +12,7 @@ const HapiAuthCookie = require('hapi-auth-cookie')
 const glob = require('glob')
 const path = require('path')
 const dbConnection = require('./dbConnection.js')()
-const secretKey = require('./secretKey.js')
+const cookiePassword = require('./cookiePassword.js')
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 let serverOptions = {
@@ -56,10 +56,11 @@ const loutConfig = {
 
 server.register([Inert, HapiAuthCookie, Vision, loutConfig], (error) => {
   if (error) console.log(`failed loading server plugins`)
-  server.auth.strategy(`base`, `cookie`, true, {
-    password: secretKey,
+  server.auth.strategy(`session`, `cookie`, true, {
+    password: cookiePassword,
     cookie: `ae-cookie`,
-    ttl: 24 * 60 * 60 * 1000 // set session to 1 day
+    ttl: 24 * 60 * 60 * 1000, // set session to 1 day
+    isSecure: process.env.NODE_ENV !== 'development' // bad idea but necessary to run on http
   })
   // add all the routes
   glob.sync(`src/routes/**/*.js`, { root: __dirname }).forEach((file) =>
