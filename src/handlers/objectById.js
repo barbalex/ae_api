@@ -92,5 +92,7 @@ module.exports = (request, reply) => {
       return
     })
     .then(() => reply(null, object))
-    .catch((error) => reply(Boom.badImplementation(error), null))
+    .catch((error) =>
+      reply(Boom.badImplementation(error), null)
+    )
 }
