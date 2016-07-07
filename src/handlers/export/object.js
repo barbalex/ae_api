@@ -23,6 +23,7 @@
  * test with:
  * http://localhost:8000/export/object?objectFields=["id"]
  * http://localhost:8000/export/object?objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
+ * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  *
  */
 
@@ -54,20 +55,20 @@ module.exports = (request, reply) => {
   } = request.query
 
   // parse passed values
-  if (objectCriteria) objectCriteria = JSON.parse(objectCriteria)
-  if (objectFields) objectFields = JSON.parse(objectFields)
-  if (taxonomyCriteria) taxonomyCriteria = JSON.parse(taxonomyCriteria)
-  if (taxonomyFields) taxonomyFields = JSON.parse(taxonomyFields)
-  if (taxonomyObjectCriteria) taxonomyObjectCriteria = JSON.parse(taxonomyObjectCriteria)
-  if (taxonomyObjectFields) taxonomyObjectFields = JSON.parse(taxonomyObjectFields)
-  if (propertyCollectionCriteria) propertyCollectionCriteria = JSON.parse(propertyCollectionCriteria)
-  if (propertyCollectionFields) propertyCollectionFields = JSON.parse(propertyCollectionFields)
-  if (propertyCollectionObjectCriteria) propertyCollectionObjectCriteria = JSON.parse(propertyCollectionObjectCriteria)
-  if (propertyCollectionObjectFields) propertyCollectionObjectFields = JSON.parse(propertyCollectionObjectFields)
-  if (relationCollectionCriteria) relationCollectionCriteria = JSON.parse(relationCollectionCriteria)
-  if (relationCollectionFields) relationCollectionFields = JSON.parse(relationCollectionFields)
-  if (relationCollectionObjectCriteria) relationCollectionObjectCriteria = JSON.parse(relationCollectionObjectCriteria)
-  if (relationCollectionObjectFields) relationCollectionObjectFields = JSON.parse(relationCollectionObjectFields)
+  if (objectCriteria) objectCriteria = escapeStringForSql(objectCriteria)
+  if (objectFields) objectFields = escapeStringForSql(objectFields)
+  if (taxonomyCriteria) taxonomyCriteria = escapeStringForSql(taxonomyCriteria)
+  if (taxonomyFields) taxonomyFields = escapeStringForSql(taxonomyFields)
+  if (taxonomyObjectCriteria) taxonomyObjectCriteria = escapeStringForSql(taxonomyObjectCriteria)
+  if (taxonomyObjectFields) taxonomyObjectFields = escapeStringForSql(taxonomyObjectFields)
+  if (propertyCollectionCriteria) propertyCollectionCriteria = escapeStringForSql(propertyCollectionCriteria)
+  if (propertyCollectionFields) propertyCollectionFields = escapeStringForSql(propertyCollectionFields)
+  if (propertyCollectionObjectCriteria) propertyCollectionObjectCriteria = escapeStringForSql(propertyCollectionObjectCriteria)
+  if (propertyCollectionObjectFields) propertyCollectionObjectFields = escapeStringForSql(propertyCollectionObjectFields)
+  if (relationCollectionCriteria) relationCollectionCriteria = escapeStringForSql(relationCollectionCriteria)
+  if (relationCollectionFields) relationCollectionFields = escapeStringForSql(relationCollectionFields)
+  if (relationCollectionObjectCriteria) relationCollectionObjectCriteria = escapeStringForSql(relationCollectionObjectCriteria)
+  if (relationCollectionObjectFields) relationCollectionObjectFields = escapeStringForSql(relationCollectionObjectFields)
 
   // give non values an empty array
   objectCriteria = objectCriteria || []
