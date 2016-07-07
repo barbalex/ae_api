@@ -95,6 +95,7 @@ module.exports = (request, reply) => {
   // because of the async request
   // but may become with Joi 9.0
   // app.db.many('SELECT * FROM ae.object')
+  // example: select jsonb_object_keys(properties) as fields from ae.taxonomy_object group by fields
 
   // TODO: make sure all criteria have values and valid comparators
   // if not: BOOM
