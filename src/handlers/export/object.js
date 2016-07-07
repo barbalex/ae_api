@@ -22,22 +22,16 @@
  *
  * test with:
  * http://localhost:8000/export/object?objectFields=["id"]
+ * http://localhost:8000/export/object?objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  *
  */
 
 const app = require('ampersand-app')
 const Boom = require('boom')
-const getObjectById = require('../../getObjectById.js')
-const getRelationCollectionsByObject = require('../../getRelationCollectionsByObject.js')
-const getPropertyCollectionsByObject = require('../../getPropertyCollectionsByObject.js')
-const getTaxonomiesByObject = require('../../getTaxonomiesByObject.js')
 const escapeStringForSql = require('../../escapeStringForSql.js')
 const criteriaArrayToSqlString = require('../../criteriaArrayToSqlString.js')
 
 module.exports = (request, reply) => {
-  console.log('request.query:', request.query)
-  console.log('request.query.objectFields:', request.query.objectFields)
-  console.log('request.query.objectFields parsed:', JSON.parse(request.query.objectFields))
   const combineTaxonomies = escapeStringForSql(request.query.combineTaxonomies) || false
   const oneRowPerRelation = escapeStringForSql(request.query.oneRowPerRelation) || true
   const includeDataFromSynonyms = escapeStringForSql(request.query.includeDataFromSynonyms) || true
@@ -59,6 +53,7 @@ module.exports = (request, reply) => {
     relationCollectionObjectFields,
   } = request.query
 
+  // parse passed values
   if (objectCriteria) objectCriteria = JSON.parse(objectCriteria)
   if (objectFields) objectFields = JSON.parse(objectFields)
   if (taxonomyCriteria) taxonomyCriteria = JSON.parse(taxonomyCriteria)
@@ -73,6 +68,22 @@ module.exports = (request, reply) => {
   if (relationCollectionFields) relationCollectionFields = JSON.parse(relationCollectionFields)
   if (relationCollectionObjectCriteria) relationCollectionObjectCriteria = JSON.parse(relationCollectionObjectCriteria)
   if (relationCollectionObjectFields) relationCollectionObjectFields = JSON.parse(relationCollectionObjectFields)
+
+  // give non values an empty array
+  objectCriteria = objectCriteria || []
+  objectFields = objectFields || []
+  taxonomyCriteria = taxonomyCriteria || []
+  taxonomyFields = taxonomyFields || []
+  taxonomyObjectCriteria = taxonomyObjectCriteria || []
+  taxonomyObjectFields = taxonomyObjectFields || []
+  propertyCollectionCriteria = propertyCollectionCriteria || []
+  propertyCollectionFields = propertyCollectionFields || []
+  propertyCollectionObjectCriteria = propertyCollectionObjectCriteria || []
+  propertyCollectionObjectFields = propertyCollectionObjectFields || []
+  relationCollectionCriteria = relationCollectionCriteria || []
+  relationCollectionFields = relationCollectionFields || []
+  relationCollectionObjectCriteria = relationCollectionObjectCriteria || []
+  relationCollectionObjectFields = relationCollectionObjectFields || []
 
   // make sure objectId is always included
   if (!objectFields.includes('id')) objectFields.unshift('id')
@@ -93,6 +104,7 @@ module.exports = (request, reply) => {
     ae.object
   ${criteriaArrayToSqlString(objectCriteria)}
   `
+  console.log('object.js, sql:', sql)
 
   app.db.many(sql)
     .then((data) => reply(null, data))
