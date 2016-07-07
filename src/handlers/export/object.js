@@ -54,7 +54,7 @@ module.exports = (request, reply) => {
     relationCollectionObjectFields,
   } = request.query
 
-  // parse passed values
+  // escape passed values
   if (objectCriteria) objectCriteria = escapeStringForSql(objectCriteria)
   if (objectFields) objectFields = escapeStringForSql(objectFields)
   if (taxonomyCriteria) taxonomyCriteria = escapeStringForSql(taxonomyCriteria)
@@ -89,8 +89,12 @@ module.exports = (request, reply) => {
   // make sure objectId is always included
   if (!objectFields.includes('id')) objectFields.unshift('id')
 
-  // TODO: make sure all fields are valid db fields
+  // TODO: make sure all json-fields are valid db fields
   // if not: BOOM
+  // it is not yet possible to do this with standard validation
+  // because of the async request
+  // but may become with Joi 9.0
+  // app.db.many('SELECT * FROM ae.object')
 
   // TODO: make sure all criteria have values and valid comparators
   // if not: BOOM
