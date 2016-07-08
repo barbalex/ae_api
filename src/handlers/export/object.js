@@ -24,12 +24,13 @@
  * http://localhost:8000/export/object?objectFields=["id"]
  * http://localhost:8000/export/object?objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
- *
+ * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
  */
 
 const app = require('ampersand-app')
 const Boom = require('boom')
 const escapeStringForSql = require('../../escapeStringForSql.js')
+const prefixCriteriaFieldWithTable = require('../../prefixCriteriaFieldWithTable.js')
 const criteriaArrayToSqlString = require('../../criteriaArrayToSqlString.js')
 
 module.exports = (request, reply) => {
@@ -89,18 +90,42 @@ module.exports = (request, reply) => {
   // make sure objectId is always included
   if (!objectFields.includes('id')) objectFields.unshift('id')
 
-  // TODO: make sure all json-fields are valid db fields
-  // if not: BOOM
-  // it is not yet possible to do this with standard validation
-  // because of the async request
-  // but may become with Joi 9.0
-  // app.db.many('SELECT * FROM ae.object')
-  // example: select jsonb_object_keys(properties) as fields from ae.taxonomy_object group by fields
-
-  // TODO: make sure all criteria have values and valid comparators
-  // if not: BOOM
-
-  const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
+  // prefix all field names
+  objectFields = objectFields.map((of) => `ae.object.${of}`)
+  objectCriteria = prefixCriteriaFieldWithTable(
+    objectCriteria,
+    'object'
+  )
+  taxonomyFields = taxonomyFields.map((of) => `ae.taxonomy.${of}`)
+  taxonomyCriteria = prefixCriteriaFieldWithTable(
+    taxonomyCriteria,
+    'taxonomy'
+  )
+  taxonomyObjectFields = taxonomyObjectFields.map((of) => `ae.taxonomy_object.${of}`)
+  taxonomyObjectCriteria = prefixCriteriaFieldWithTable(
+    taxonomyObjectCriteria,
+    'taxonomy_object'
+  )
+  propertyCollectionFields = propertyCollectionFields.map((of) => `ae.property_collection.${of}`)
+  propertyCollectionCriteria = prefixCriteriaFieldWithTable(
+    propertyCollectionCriteria,
+    'property_collection'
+  )
+  propertyCollectionObjectFields = propertyCollectionObjectFields.map((of) => `ae.property_collection_object.${of}`)
+  propertyCollectionObjectCriteria = prefixCriteriaFieldWithTable(
+    propertyCollectionObjectCriteria,
+    'property_collection_object'
+  )
+  relationCollectionFields = relationCollectionFields.map((of) => `ae.relation_collection.${of}`)
+  relationCollectionCriteria = prefixCriteriaFieldWithTable(
+    relationCollectionCriteria,
+    'relation_collection'
+  )
+  relationCollectionObjectFields = relationCollectionObjectFields.map((of) => `ae.relation_collection_object.${of}`)
+  relationCollectionObjectCriteria = prefixCriteriaFieldWithTable(
+    relationCollectionObjectCriteria,
+    'relation_collection_object'
+  )
 
   let taxonomyProperties
   let propertyCollectionProperties
@@ -147,20 +172,33 @@ module.exports = (request, reply) => {
             ae.relation
           GROUP BY relation_collection_id, field)
           AS fieldslist
-      GROUP BY fieldslist.relation_collection_id
+          GROUP BY fieldslist.relation_collection_id
       `)
     })
     .then((data) => {
       relationCollectionProperties = data
       console.log('relationCollectionProperties:', relationCollectionProperties)
+      // TODO: make sure all json-fields are valid db fields
+      // if not: BOOM
+      // it is not yet possible to do this with standard validation
+      // because of the async request
+      // but may become with Joi 9.0
+
+      const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
+
       // select
       const sql = `
         SELECT
-          ${objectFields}
+          ${taxonomyFields}${taxonomyFields.length > 0 ? ',' : ''}${objectFields}
         FROM
           ae.object
+          ${joinType} JOIN ae.taxonomy_object
+            INNER JOIN ae.taxonomy
+            ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
+          ON ae.object.id = ae.taxonomy_object.object_id
         ${criteriaArrayToSqlString(objectCriteria)}
       `
+
       console.log('object.js, sql:', sql)
       return app.db.many(sql)
     })
