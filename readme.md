@@ -14,4 +14,5 @@ Es ist noch im Aufbau. Künftig soll es enhalten:
 
 ## Features:
 
-* unter [http://arteigenschaften.ch/api](http://arteigenschaften.ch/api) ist die vollständige API dokumentiert (erst nutzbar, wenn dieses Projekt live ist) 
+* die ganze API wird validiert
+* unter [http://arteigenschaften.ch/api](http://arteigenschaften.ch/api) ist die API dokumentiert (erst nutzbar, wenn dieses Projekt live ist) 
