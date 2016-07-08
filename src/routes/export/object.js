@@ -2,6 +2,13 @@
 
 const Joi = require('joi')
 const object = require('../../handlers/export/object.js')
+const objectFields = require('../../objectFields.js')
+const taxonomyFields = require('../../taxonomyFields.js')
+const taxonomyObjectFields = require('../../taxonomyObjectFields.js')
+const propertyCollectionFields = require('../../propertyCollectionFields.js')
+const propertyCollectionObjectFields = require('../../propertyCollectionObjectFields.js')
+const relationCollectionFields = require('../../relationCollectionFields.js')
+const relationFields = require('../../relationFields.js')
 
 const criteriaSchema = (fieldItems) => Joi
   .array()
@@ -23,75 +30,25 @@ const fieldsSchema = (items) => Joi
 
 const objectFieldItems = Joi
   .string()
-  .valid([
-    'id',
-    'category',
-    'organization_id',
-  ])
+  .valid(objectFields)
 const taxonomyFieldItems = Joi
   .string()
-  .valid([
-    'id',
-    'name',
-    'description',
-    'links',
-    'last_updated',
-    'organization_id',
-    'category',
-    'is_category_standard',
-  ])
+  .valid(taxonomyFields)
 const taxonomyObjectFieldItems = Joi
   .string()
-  .valid([
-    'id',
-    'taxonomy_id',
-    'parent_id',
-    'object_id',
-    'name',
-    'properties',
-  ])
+  .valid(taxonomyObjectFields)
 const propertyCollectionFieldItems = Joi
   .string()
-  .valid([
-    'id',
-    'name',
-    'description',
-    'links',
-    'combining',
-    'last_updated',
-    'organization_id',
-    'terms_of_use',
-    'imported_by',
-  ])
+  .valid(propertyCollectionFields)
 const propertyCollectionObjectFieldItems = Joi
   .string()
-  .valid([
-    'object_id',
-    'property_collection_id',
-    'properties',
-  ])
+  .valid(propertyCollectionObjectFields)
 const relationCollectionFieldItems = Joi
   .string()
-  .valid([
-    'id',
-    'name',
-    'description',
-    'links',
-    'nature_of_relation',
-    'combining',
-    'last_updated',
-    'organization_id',
-    'terms_of_use',
-    'imported_by',
-  ])
+  .valid(relationCollectionFields)
 const relationFieldItems = Joi
   .string()
-  .valid([
-    'id',
-    'object_id',
-    'relation_collection_id',
-    'properties',
-  ])
+  .valid(relationFields)
 
 module.exports = {
   method: 'GET',

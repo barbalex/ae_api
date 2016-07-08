@@ -1,3 +1,5 @@
+/* eslint no-unused-vars:0, no-console:0, max-len:0 */
+
 'use strict'
 
 /**
@@ -29,9 +31,14 @@
 
 const app = require('ampersand-app')
 const Boom = require('boom')
+const _ = require('lodash')
 const escapeStringForSql = require('../../escapeStringForSql.js')
 const prefixCriteriaFieldWithTable = require('../../prefixCriteriaFieldWithTable.js')
 const criteriaArrayToSqlString = require('../../criteriaArrayToSqlString.js')
+const objectFieldsList = require('../../objectFields.js')
+const taxonomyObjectFieldsList = require('../../taxonomyObjectFields.js')
+const propertyCollectionObjectFieldsList = require('../../propertyCollectionObjectFields.js')
+const relationFieldsList = require('../../relationFields.js')
 
 module.exports = (request, reply) => {
   const combineTaxonomies = escapeStringForSql(request.query.combineTaxonomies) || false
@@ -126,10 +133,28 @@ module.exports = (request, reply) => {
     relationCollectionObjectCriteria,
     'relation_collection_object'
   )
+  const allFields = _.concat(
+    objectFields,
+    taxonomyFields,
+    taxonomyObjectFields,
+    propertyCollectionFields,
+    propertyCollectionObjectFields,
+    relationCollectionFields,
+    relationCollectionObjectFields
+  )
+  const allCriteria = _.concat(
+    objectCriteria,
+    taxonomyCriteria,
+    taxonomyObjectCriteria,
+    propertyCollectionCriteria,
+    propertyCollectionObjectCriteria,
+    relationCollectionCriteria,
+    relationCollectionObjectCriteria
+  )
 
-  let taxonomyProperties
+  let taxonomyObjectProperties
   let propertyCollectionProperties
-  let relationCollectionProperties
+  let relationProperties
   app.db.many(`
     SELECT
       fieldslist.taxonomy_id, array_agg(fieldslist.field) AS fields
@@ -144,8 +169,8 @@ module.exports = (request, reply) => {
   `)
     .then((data) => {
       console.log('data:', data)
-      taxonomyProperties = data
-      console.log('taxonomyProperties:', taxonomyProperties)
+      taxonomyObjectProperties = data
+      console.log('taxonomyObjectProperties:', taxonomyObjectProperties)
       return app.db.many(`
         SELECT
           fieldslist.property_collection_id, array_agg(fieldslist.field) AS fields
@@ -161,7 +186,7 @@ module.exports = (request, reply) => {
     })
     .then((data) => {
       propertyCollectionProperties = data
-      console.log('propertyCollectionProperties:', propertyCollectionProperties)
+      // console.log('propertyCollectionProperties:', propertyCollectionProperties)
       return app.db.many(`
         SELECT
           fieldslist.relation_collection_id, array_agg(fieldslist.field) AS fields
@@ -176,27 +201,44 @@ module.exports = (request, reply) => {
       `)
     })
     .then((data) => {
-      relationCollectionProperties = data
-      console.log('relationCollectionProperties:', relationCollectionProperties)
+      relationProperties = data
+      console.log('relationProperties:', relationProperties)
+
       // TODO: make sure all json-fields are valid db fields
       // if not: BOOM
       // it is not yet possible to do this with standard validation
       // because of the async request
       // but may become with Joi 9.0
-
+      taxonomyObjectFields.forEach((tOF) => {
+        if (
+          !taxonomyObjectFieldsList.includes(tOF) &&
+          !taxonomyObjectProperties.includes(tOF)
+        ) {
+          return reply(Boom.badRequest(`Die Eigenschaft ${tOF} existiert nicht`))
+        }
+      })
+      // TODO: propertyCollectionObject
+      relationCollectionFields.forEach((rCF) => {
+        if (
+          !relationFieldsList.includes(rCF) &&
+          !relationProperties.includes(rCF)
+        ) {
+          return reply(Boom.badRequest(`Die Eigenschaft ${rCF} existiert nicht`))
+        }
+      })
       const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
 
       // select
       const sql = `
         SELECT
-          ${taxonomyFields}${taxonomyFields.length > 0 ? ',' : ''}${objectFields}
+          ${allFields}
         FROM
           ae.object
           ${joinType} JOIN ae.taxonomy_object
             INNER JOIN ae.taxonomy
             ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
           ON ae.object.id = ae.taxonomy_object.object_id
-        ${criteriaArrayToSqlString(objectCriteria)}
+        ${criteriaArrayToSqlString(allCriteria)}
       `
 
       console.log('object.js, sql:', sql)
