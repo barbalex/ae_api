@@ -15,20 +15,29 @@
  *   "Beziehungssammlung: <<relation_collection.name>>: Eigenschaft: <<properties.fieldName>>": xxx,
  * }
  *
+ * passed fields have the form:
+ * {
+ *   table: xxx,
+ *   property: bool,
+ *   field: xxx
+ * }
+ *
  * passed criteria have the form:
  * {
+ *   table: xxx,
+ *   property: bool,
  *   field: xxx,
  *   value: xxx,
  *   comparator: xxx
  * }
  *
  * test with:
- * http://localhost:8000/export/object?objectFields=["id"]
+ * http://localhost:8000/export/object?categories=["Flora"]&objectFields=["id"]
  * http://localhost:8000/export/object?objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
  *  http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"category","value":"Moose"}]
- *  http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"category","value":"Flora"}]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
+ *  http://localhost:8000/export/object?categories=["Flora"]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
  */
 
 const app = require('ampersand-app')
@@ -41,8 +50,16 @@ const objectFieldsList = require('../../objectFields.js')
 const taxonomyObjectFieldsList = require('../../taxonomyObjectFields.js')
 const propertyCollectionObjectFieldsList = require('../../propertyCollectionObjectFields.js')
 const relationFieldsList = require('../../relationFields.js')
+const objectFieldsList = require('../../objectFields.js')
+const taxonomyFieldsList = require('../../taxonomyFields.js')
+const taxonomyObjectFieldsList = require('../../taxonomyObjectFields.js')
+const propertyCollectionFieldsList = require('../../propertyCollectionFields.js')
+const propertyCollectionObjectFieldsList = require('../../propertyCollectionObjectFields.js')
+const relationCollectionFieldsList = require('../../relationCollectionFields.js')
+const relationFieldsList = require('../../relationFields.js')
 
 module.exports = (request, reply) => {
+  const categories = escapeStringForSql(request.query.categories)
   const combineTaxonomies = escapeStringForSql(request.query.combineTaxonomies) || false
   const oneRowPerRelation = escapeStringForSql(request.query.oneRowPerRelation) || true
   const includeDataFromSynonyms = escapeStringForSql(request.query.includeDataFromSynonyms) || true
@@ -157,17 +174,17 @@ module.exports = (request, reply) => {
   let taxonomyObjectProperties
   let propertyCollectionProperties
   let relationProperties
+  console.log('categories:', categories)
   app.db.many(`
     SELECT
-      fieldslist.taxonomy_id, array_agg(fieldslist.field) AS fields
-    FROM (
-      SELECT
-        taxonomy_id, jsonb_object_keys(properties) AS field
-      FROM
-        ae.taxonomy_object
-      GROUP BY taxonomy_id, field)
-      AS fieldslist
-    GROUP BY fieldslist.taxonomy_id
+      jsonb_object_keys(properties) AS field
+    FROM
+      ae.taxonomy_object
+      INNER JOIN ae.taxonomy
+      ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
+    WHERE
+      ae.taxonomy.category IN (${categories})
+    GROUP BY field
   `)
     .then((data) => {
       console.log('data:', data)
