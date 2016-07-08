@@ -12,7 +12,7 @@ module.exports = (criteria) => {
       const comparator = c.comparator || '='
       return `${c.field}${comparator}${value}`
     })
-    sqlString = ` WHERE ${cArray.join(' AND ')}`
+    sqlString = `WHERE ${cArray.join(' AND ')}`
   }
   return sqlString
 }

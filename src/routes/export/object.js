@@ -9,6 +9,7 @@ const propertyCollectionFields = require('../../propertyCollectionFields.js')
 const propertyCollectionObjectFields = require('../../propertyCollectionObjectFields.js')
 const relationCollectionFields = require('../../relationCollectionFields.js')
 const relationFields = require('../../relationFields.js')
+const categories = require('../../categories.js')
 
 const criteriaSchema = (fieldItems) => Joi
   .array()
@@ -34,21 +35,12 @@ const objectFieldItems = Joi
 const taxonomyFieldItems = Joi
   .string()
   .valid(taxonomyFields)
-const taxonomyObjectFieldItems = Joi
-  .string()
-  .valid(taxonomyObjectFields)
 const propertyCollectionFieldItems = Joi
   .string()
   .valid(propertyCollectionFields)
-const propertyCollectionObjectFieldItems = Joi
-  .string()
-  .valid(propertyCollectionObjectFields)
 const relationCollectionFieldItems = Joi
   .string()
   .valid(relationCollectionFields)
-const relationFieldItems = Joi
-  .string()
-  .valid(relationFields)
 
 module.exports = {
   method: 'GET',
@@ -57,20 +49,21 @@ module.exports = {
   config: {
     validate: {
       query: {
+        categories: Joi.array().min(1).max(5).items(Joi.string().valid(categories)).required(),
         objectCriteria: criteriaSchema(objectFieldItems),
         objectFields: fieldsSchema(objectFieldItems),
         taxonomyCriteria: criteriaSchema(taxonomyFieldItems),
         taxonomyFields: fieldsSchema(taxonomyFieldItems),
-        taxonomyObjectCriteria: criteriaSchema(taxonomyObjectFieldItems),
-        taxonomyObjectFields: fieldsSchema(taxonomyObjectFieldItems),
+        taxonomyObjectCriteria: criteriaSchema(Joi.string()),
+        taxonomyObjectFields: fieldsSchema(Joi.string()),
         propertyCollectionCriteria: criteriaSchema(propertyCollectionFieldItems),
         propertyCollectionFields: fieldsSchema(propertyCollectionFieldItems),
-        propertyCollectionObjectCriteria: criteriaSchema(propertyCollectionObjectFieldItems),
-        propertyCollectionObjectFields: fieldsSchema(propertyCollectionObjectFieldItems),
+        propertyCollectionObjectCriteria: criteriaSchema(Joi.string()),
+        propertyCollectionObjectFields: fieldsSchema(Joi.string()),
         relationCollectionCriteria: criteriaSchema(relationCollectionFieldItems),
         relationCollectionFields: fieldsSchema(relationCollectionFieldItems),
-        relationCriteria: criteriaSchema(relationFieldItems),
-        relationFields: fieldsSchema(relationFieldItems)
+        relationCriteria: criteriaSchema(Joi.string()),
+        relationFields: fieldsSchema(Joi.string())
       }
     },
     auth: false

@@ -27,6 +27,8 @@
  * http://localhost:8000/export/object?objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
+ *  http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"category","value":"Moose"}]
+ *  http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"category","value":"Flora"}]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
  */
 
 const app = require('ampersand-app')
@@ -204,11 +206,12 @@ module.exports = (request, reply) => {
       relationProperties = data
       console.log('relationProperties:', relationProperties)
 
-      // TODO: make sure all json-fields are valid db fields
-      // if not: BOOM
-      // it is not yet possible to do this with standard validation
-      // because of the async request
-      // but may become with Joi 9.0
+      /**
+       * make sure all json-fields are valid db fields
+       * it is not yet possible to do this with standard validation
+       * because of the async request
+       * but may become with Joi 9.0
+       */
       taxonomyObjectFields.forEach((tOF) => {
         if (
           !taxonomyObjectFieldsList.includes(tOF) &&
@@ -228,17 +231,23 @@ module.exports = (request, reply) => {
       })
       const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
 
-      // select
+      // select all objects that comply to criteria
       const sql = `
         SELECT
-          ${allFields}
+          ae.object.id
         FROM
           ae.object
-          ${joinType} JOIN ae.taxonomy_object
+          INNER JOIN (ae.taxonomy_object
             INNER JOIN ae.taxonomy
-            ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
+            ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id)
           ON ae.object.id = ae.taxonomy_object.object_id
+          INNER JOIN (ae.property_collection_object
+            INNER JOIN ae.property_collection
+            ON ae.property_collection_object.property_collection_id = ae.property_collection.id)
+          ON ae.object.id = ae.property_collection_object.object_id
         ${criteriaArrayToSqlString(allCriteria)}
+        GROUP BY
+          ae.object.id
       `
 
       console.log('object.js, sql:', sql)
