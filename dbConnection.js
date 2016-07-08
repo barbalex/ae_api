@@ -7,7 +7,7 @@ module.exports = () => {
       cors: true
     }
   }
-  if (process.env.NODE_ENV === `development`) {
+  if (process.env.NODE_ENV !== `production`) {
     connection.port = 8000
   }
   return connection
