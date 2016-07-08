@@ -99,37 +99,71 @@ module.exports = (request, reply) => {
 
   // TODO: make sure all criteria have values and valid comparators
   // if not: BOOM
-  let taxonomyObjectProperties
-  let propertyCollectionObjectProperties
-  let relationProperties
-  app.db.many('SELECT taxonomy_id, jsonb_object_keys(properties) AS fields FROM ae.taxonomy_object GROUP BY taxonomy_id, fields')
-    .then((data) => {
-      taxonomyObjectProperties = data.map((d) => d.fields)
-      console.log('taxonomyObjectProperties:', taxonomyObjectProperties)
-      return app.db.many('SELECT property_collection_id, jsonb_object_keys(properties) AS fields FROM ae.property_collection_object GROUP BY property_collection_id, fields')
-    })
-    .then((data) => {
-      propertyCollectionObjectProperties = data.map((d) => d.fields)
-      console.log('propertyCollectionObjectProperties:', propertyCollectionObjectProperties)
-      return app.db.many('SELECT relation_collection_id, jsonb_object_keys(properties) AS fields FROM ae.relation GROUP BY relation_collection_id, fields')
-    })
-    .catch((error) =>
-      reply(Boom.badImplementation(error), null)
-    )
 
   const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
 
-  // select
-  const sql = `
-  SELECT
-    ${objectFields}
-  FROM
-    ae.object
-  ${criteriaArrayToSqlString(objectCriteria)}
-  `
-  console.log('object.js, sql:', sql)
-
-  app.db.many(sql)
+  let taxonomyProperties
+  let propertyCollectionProperties
+  let relationCollectionProperties
+  app.db.many(`
+    SELECT
+      fieldslist.taxonomy_id, array_agg(fieldslist.field) AS fields
+    FROM (
+      SELECT
+        taxonomy_id, jsonb_object_keys(properties) AS field
+      FROM
+        ae.taxonomy_object
+      GROUP BY taxonomy_id, field)
+      AS fieldslist
+    GROUP BY fieldslist.taxonomy_id
+  `)
+    .then((data) => {
+      console.log('data:', data)
+      taxonomyProperties = data
+      console.log('taxonomyProperties:', taxonomyProperties)
+      return app.db.many(`
+        SELECT
+          fieldslist.property_collection_id, array_agg(fieldslist.field) AS fields
+        FROM (
+          SELECT
+              property_collection_id, jsonb_object_keys(properties) AS field
+            FROM
+              ae.property_collection_object
+          GROUP BY property_collection_id, field)
+          AS fieldslist
+        GROUP BY fieldslist.property_collection_id
+      `)
+    })
+    .then((data) => {
+      propertyCollectionProperties = data
+      console.log('propertyCollectionProperties:', propertyCollectionProperties)
+      return app.db.many(`
+        SELECT
+          fieldslist.relation_collection_id, array_agg(fieldslist.field) AS fields
+        FROM (
+          SELECT
+            relation_collection_id, jsonb_object_keys(properties) AS field
+          FROM
+            ae.relation
+          GROUP BY relation_collection_id, field)
+          AS fieldslist
+      GROUP BY fieldslist.relation_collection_id
+      `)
+    })
+    .then((data) => {
+      relationCollectionProperties = data
+      console.log('relationCollectionProperties:', relationCollectionProperties)
+      // select
+      const sql = `
+        SELECT
+          ${objectFields}
+        FROM
+          ae.object
+        ${criteriaArrayToSqlString(objectCriteria)}
+      `
+      console.log('object.js, sql:', sql)
+      return app.db.many(sql)
+    })
     .then((data) => reply(null, data))
     .catch((error) =>
       reply(Boom.badImplementation(error), null)
