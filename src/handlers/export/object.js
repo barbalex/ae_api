@@ -34,7 +34,7 @@
  * test with:
  * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]
  * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
- * http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
+ *  http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"},{"table":"taxonomy","field":"name"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
  *  http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"category","value":"Moose"}]
  *  http://localhost:8000/export/object?categories=["Flora"]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
@@ -145,6 +145,7 @@ module.exports = (request, reply) => {
       const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
 
       // select all objects that comply to criteria
+      // TODO: list fields form fields array
       const sql = `
         SELECT
           ae.object.id
