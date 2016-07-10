@@ -1,5 +1,11 @@
 'use strict'
 
+/**
+ * this is used for the SELECT line (without group)
+ * and also for the group line (with group = true)
+ * in the group line no 'AS' may appear
+ */
+
 module.exports = (fields, group) => {
   let sqlString = ''
   if (fields.length > 0) {
