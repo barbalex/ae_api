@@ -45,14 +45,8 @@ const Boom = require('boom')
 const _ = require('lodash')
 const escapeStringForSql = require('../../escapeStringForSql.js')
 const prefixCriteriaFieldWithTable = require('../../prefixCriteriaFieldWithTable.js')
-const criteriaArrayToSqlString = require('../../criteriaArrayToSqlString.js')
-const objectFieldsList = require('../../objectFields.js')
-const taxonomyObjectFieldsList = require('../../taxonomyObjectFields.js')
-const propertyCollectionObjectFieldsList = require('../../propertyCollectionObjectFields.js')
-const relationFieldsList = require('../../relationFields.js')
-const taxonomyFieldsList = require('../../taxonomyFields.js')
-const propertyCollectionFieldsList = require('../../propertyCollectionFields.js')
-const relationCollectionFieldsList = require('../../relationCollectionFields.js')
+const criteriaToSqlString = require('../../criteriaToSqlString.js')
+const fieldsByTable = require('../../fieldsByTable.js')
 
 module.exports = (request, reply) => {
   const {
@@ -74,9 +68,11 @@ module.exports = (request, reply) => {
     })
   }
 
-  let taxonomyObjectProperties
-  let propertyCollectionProperties
-  let relationProperties
+  const propertyFields = {
+    taxonomy_object: [],
+    property_collection_object: [],
+    relation: []
+  }
   console.log('categories:', categories)
   app.db.many(`
     SELECT
@@ -91,8 +87,7 @@ module.exports = (request, reply) => {
   `)
     .then((data) => {
       console.log('data:', data)
-      taxonomyObjectProperties = data
-      console.log('taxonomyObjectProperties:', taxonomyObjectProperties)
+      propertyFields.taxonomy_object = data
       return app.db.many(`
         SELECT
           fieldslist.property_collection_id, array_agg(fieldslist.field) AS fields
@@ -107,8 +102,7 @@ module.exports = (request, reply) => {
       `)
     })
     .then((data) => {
-      propertyCollectionProperties = data
-      // console.log('propertyCollectionProperties:', propertyCollectionProperties)
+      propertyFields.property_collection_object = data
       return app.db.many(`
         SELECT
           fieldslist.relation_collection_id, array_agg(fieldslist.field) AS fields
@@ -123,30 +117,27 @@ module.exports = (request, reply) => {
       `)
     })
     .then((data) => {
-      relationProperties = data
-      console.log('relationProperties:', relationProperties)
+      propertyFields.relation = data
+      console.log('propertyFields:', propertyFields)
 
       /**
-       * make sure all json-fields are valid db fields
+       * make sure all property-fields are valid db fields
        * it is not yet possible to do this with standard validation
        * because of the async request
        * but may become with Joi 9.0
        */
-      taxonomyObjectFields.forEach((tOF) => {
-        if (
-          !taxonomyObjectFieldsList.includes(tOF) &&
-          !taxonomyObjectProperties.includes(tOF)
-        ) {
-          return reply(Boom.badRequest(`Die Eigenschaft ${tOF} existiert nicht`))
+      fields.forEach((f) => {
+        if (!Object.keys(fieldsByTable).includes(f.table)) {
+          return reply(Boom.badRequest(`Die Tabelle ${f.table} existiert nicht`))
         }
-      })
-      // TODO: propertyCollectionObject
-      relationCollectionFields.forEach((rCF) => {
         if (
-          !relationFieldsList.includes(rCF) &&
-          !relationProperties.includes(rCF)
+          (
+            f.property &&
+            !propertyFields[f.table].includes(f.field)
+          ) ||
+          !fieldsByTable[f.table].includes(f.field)
         ) {
-          return reply(Boom.badRequest(`Die Eigenschaft ${rCF} existiert nicht`))
+          return reply(Boom.badRequest(`Die Eigenschaft ${f.field} existiert nicht`))
         }
       })
       const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
@@ -165,7 +156,7 @@ module.exports = (request, reply) => {
             INNER JOIN ae.property_collection
             ON ae.property_collection_object.property_collection_id = ae.property_collection.id)
           ON ae.object.id = ae.property_collection_object.object_id
-        ${criteriaArrayToSqlString(allCriteria)}
+        ${criteriaToSqlString(criteria)}
         GROUP BY
           ae.object.id
       `
