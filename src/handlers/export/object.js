@@ -35,9 +35,9 @@
  * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]
  * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  *  http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"},{"table":"taxonomy","field":"name"},{"table":"taxonomy_object","property":"true","field":"Artname vollständig"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
- * http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
- *  http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"category","value":"Moose"}]
- *  http://localhost:8000/export/object?categories=["Flora"]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
+ *
+  http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"},{"table":"taxonomy","field":"name"},{"table":"taxonomy_object","property":"true","field":"Artname vollständig"}]&criteria=[{"table":"taxonomy_object","property":"true","field":"Gattung","value":"Rosa"}]
+ *
  */
 
 const app = require('ampersand-app')

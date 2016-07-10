@@ -6,7 +6,10 @@ module.exports = (criteria) => {
     const cArray = criteria.map((c) => {
       const value = isNaN(c.value) ? `'${c.value}'` : c.value
       const comparator = c.comparator || '='
-      return `ae.${c.table}.${c.field}${comparator}${value}`
+      if (!c.property) {
+        return `ae.${c.table}.${c.field}${comparator}${value}`
+      }
+      return `ae.${c.table}.properties->>'${c.field}'${comparator}${value}`
     })
     sqlString = `WHERE ${cArray.join(' AND ')}`
   }
