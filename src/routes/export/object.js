@@ -37,7 +37,7 @@ module.exports = {
                   .required(),
               })
           )
-          .allow(null),
+          .required(),
         criteria: Joi
           .array()
           .items(

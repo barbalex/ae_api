@@ -50,126 +50,29 @@ const objectFieldsList = require('../../objectFields.js')
 const taxonomyObjectFieldsList = require('../../taxonomyObjectFields.js')
 const propertyCollectionObjectFieldsList = require('../../propertyCollectionObjectFields.js')
 const relationFieldsList = require('../../relationFields.js')
-const objectFieldsList = require('../../objectFields.js')
 const taxonomyFieldsList = require('../../taxonomyFields.js')
-const taxonomyObjectFieldsList = require('../../taxonomyObjectFields.js')
 const propertyCollectionFieldsList = require('../../propertyCollectionFields.js')
-const propertyCollectionObjectFieldsList = require('../../propertyCollectionObjectFields.js')
 const relationCollectionFieldsList = require('../../relationCollectionFields.js')
-const relationFieldsList = require('../../relationFields.js')
 
 module.exports = (request, reply) => {
-  const categories = escapeStringForSql(request.query.categories)
-  const combineTaxonomies = escapeStringForSql(request.query.combineTaxonomies) || false
-  const oneRowPerRelation = escapeStringForSql(request.query.oneRowPerRelation) || true
-  const includeDataFromSynonyms = escapeStringForSql(request.query.includeDataFromSynonyms) || true
-  const onlyObjectsWithCollectionData = escapeStringForSql(request.query.onlyObjectsWithCollectionData) || true
-  let {
-    objectCriteria,
-    objectFields,
-    taxonomyCriteria,
-    taxonomyFields,
-    taxonomyObjectCriteria,
-    taxonomyObjectFields,
-    propertyCollectionCriteria,
-    propertyCollectionFields,
-    propertyCollectionObjectCriteria,
-    propertyCollectionObjectFields,
-    relationCollectionCriteria,
-    relationCollectionFields,
-    relationCollectionObjectCriteria,
-    relationCollectionObjectFields,
+  const {
+    categories,
+    fields,
+    criteria = [],
+    combineTaxonomies = false,
+    oneRowPerRelation = true,
+    includeDataFromSynonyms = true,
+    onlyObjectsWithCollectionData = true,
   } = request.query
 
-  // escape passed values
-  if (objectCriteria) objectCriteria = escapeStringForSql(objectCriteria)
-  if (objectFields) objectFields = escapeStringForSql(objectFields)
-  if (taxonomyCriteria) taxonomyCriteria = escapeStringForSql(taxonomyCriteria)
-  if (taxonomyFields) taxonomyFields = escapeStringForSql(taxonomyFields)
-  if (taxonomyObjectCriteria) taxonomyObjectCriteria = escapeStringForSql(taxonomyObjectCriteria)
-  if (taxonomyObjectFields) taxonomyObjectFields = escapeStringForSql(taxonomyObjectFields)
-  if (propertyCollectionCriteria) propertyCollectionCriteria = escapeStringForSql(propertyCollectionCriteria)
-  if (propertyCollectionFields) propertyCollectionFields = escapeStringForSql(propertyCollectionFields)
-  if (propertyCollectionObjectCriteria) propertyCollectionObjectCriteria = escapeStringForSql(propertyCollectionObjectCriteria)
-  if (propertyCollectionObjectFields) propertyCollectionObjectFields = escapeStringForSql(propertyCollectionObjectFields)
-  if (relationCollectionCriteria) relationCollectionCriteria = escapeStringForSql(relationCollectionCriteria)
-  if (relationCollectionFields) relationCollectionFields = escapeStringForSql(relationCollectionFields)
-  if (relationCollectionObjectCriteria) relationCollectionObjectCriteria = escapeStringForSql(relationCollectionObjectCriteria)
-  if (relationCollectionObjectFields) relationCollectionObjectFields = escapeStringForSql(relationCollectionObjectFields)
-
-  // give non values an empty array
-  objectCriteria = objectCriteria || []
-  objectFields = objectFields || []
-  taxonomyCriteria = taxonomyCriteria || []
-  taxonomyFields = taxonomyFields || []
-  taxonomyObjectCriteria = taxonomyObjectCriteria || []
-  taxonomyObjectFields = taxonomyObjectFields || []
-  propertyCollectionCriteria = propertyCollectionCriteria || []
-  propertyCollectionFields = propertyCollectionFields || []
-  propertyCollectionObjectCriteria = propertyCollectionObjectCriteria || []
-  propertyCollectionObjectFields = propertyCollectionObjectFields || []
-  relationCollectionCriteria = relationCollectionCriteria || []
-  relationCollectionFields = relationCollectionFields || []
-  relationCollectionObjectCriteria = relationCollectionObjectCriteria || []
-  relationCollectionObjectFields = relationCollectionObjectFields || []
-
   // make sure objectId is always included
-  if (!objectFields.includes('id')) objectFields.unshift('id')
-
-  // prefix all field names
-  objectFields = objectFields.map((of) => `ae.object.${of}`)
-  objectCriteria = prefixCriteriaFieldWithTable(
-    objectCriteria,
-    'object'
-  )
-  taxonomyFields = taxonomyFields.map((of) => `ae.taxonomy.${of}`)
-  taxonomyCriteria = prefixCriteriaFieldWithTable(
-    taxonomyCriteria,
-    'taxonomy'
-  )
-  taxonomyObjectFields = taxonomyObjectFields.map((of) => `ae.taxonomy_object.${of}`)
-  taxonomyObjectCriteria = prefixCriteriaFieldWithTable(
-    taxonomyObjectCriteria,
-    'taxonomy_object'
-  )
-  propertyCollectionFields = propertyCollectionFields.map((of) => `ae.property_collection.${of}`)
-  propertyCollectionCriteria = prefixCriteriaFieldWithTable(
-    propertyCollectionCriteria,
-    'property_collection'
-  )
-  propertyCollectionObjectFields = propertyCollectionObjectFields.map((of) => `ae.property_collection_object.${of}`)
-  propertyCollectionObjectCriteria = prefixCriteriaFieldWithTable(
-    propertyCollectionObjectCriteria,
-    'property_collection_object'
-  )
-  relationCollectionFields = relationCollectionFields.map((of) => `ae.relation_collection.${of}`)
-  relationCollectionCriteria = prefixCriteriaFieldWithTable(
-    relationCollectionCriteria,
-    'relation_collection'
-  )
-  relationCollectionObjectFields = relationCollectionObjectFields.map((of) => `ae.relation_collection_object.${of}`)
-  relationCollectionObjectCriteria = prefixCriteriaFieldWithTable(
-    relationCollectionObjectCriteria,
-    'relation_collection_object'
-  )
-  const allFields = _.concat(
-    objectFields,
-    taxonomyFields,
-    taxonomyObjectFields,
-    propertyCollectionFields,
-    propertyCollectionObjectFields,
-    relationCollectionFields,
-    relationCollectionObjectFields
-  )
-  const allCriteria = _.concat(
-    objectCriteria,
-    taxonomyCriteria,
-    taxonomyObjectCriteria,
-    propertyCollectionCriteria,
-    propertyCollectionObjectCriteria,
-    relationCollectionCriteria,
-    relationCollectionObjectCriteria
-  )
+  const idField = fields.find((f) => f.table === 'object' && f.field === 'id')
+  if (!idField) {
+    fields.unshift({
+      table: 'object',
+      field: 'id'
+    })
+  }
 
   let taxonomyObjectProperties
   let propertyCollectionProperties
