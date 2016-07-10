@@ -46,6 +46,7 @@ const _ = require('lodash')
 const escapeStringForSql = require('../../escapeStringForSql.js')
 const prefixCriteriaFieldWithTable = require('../../prefixCriteriaFieldWithTable.js')
 const criteriaToSqlString = require('../../criteriaToSqlString.js')
+const fieldsToSqlString = require('../../fieldsToSqlString.js')
 const fieldsByTable = require('../../fieldsByTable.js')
 
 module.exports = (request, reply) => {
@@ -148,20 +149,29 @@ module.exports = (request, reply) => {
       // TODO: list fields form fields array
       const sql = `
         SELECT
-          ae.object.id
+          ${fieldsToSqlString(fields)}
         FROM
           ae.object
-          INNER JOIN (ae.taxonomy_object
+          ${joinType} JOIN (ae.taxonomy_object
             INNER JOIN ae.taxonomy
             ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id)
           ON ae.object.id = ae.taxonomy_object.object_id
-          INNER JOIN (ae.property_collection_object
+          ${joinType} JOIN (ae.property_collection_object
             INNER JOIN ae.property_collection
             ON ae.property_collection_object.property_collection_id = ae.property_collection.id)
           ON ae.object.id = ae.property_collection_object.object_id
+          ${joinType} JOIN ((ae.relation_collection_object
+            INNER JOIN ae.relation_collection
+            ON ae.relation_collection_object.relation_collection_id = ae.relation_collection.id)
+            INNER JOIN (ae.relation
+              INNER JOIN ae.relation_partner
+              ON ae.relation_partner.relation_id = ae.relation.id)
+            ON ae.relation.object_id = ae.relation_collection_object.object_id
+            AND ae.relation.relation_collection_id = ae.relation_collection_object.relation_collection_id)
+          ON ae.object.id = ae.relation_collection_object.object_id
         ${criteriaToSqlString(criteria)}
         GROUP BY
-          ae.object.id
+          ${fieldsToSqlString(fields)}
       `
 
       console.log('object.js, sql:', sql)
