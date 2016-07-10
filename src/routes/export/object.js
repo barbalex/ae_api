@@ -52,11 +52,13 @@ module.exports = {
                 field: Joi
                   .string()
                   .required(),
-                value: [
-                  Joi.number(),
-                  Joi.string()
-                ]
-                .required(),
+                value: Joi
+                  .any()
+                  .allow([
+                    Joi.number(),
+                    Joi.string()
+                  ])
+                  .required(),
                 comparator: Joi
                   .string()
                   .valid(['=', '<', '<=', '>', '>=', '<>']),

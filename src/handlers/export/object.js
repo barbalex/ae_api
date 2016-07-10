@@ -32,11 +32,11 @@
  * }
  *
  * test with:
- * http://localhost:8000/export/object?categories=["Flora"]&objectFields=["id"]
- * http://localhost:8000/export/object?objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
- * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
- * http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
- *  http://localhost:8000/export/object?objectFields=["id"]&objectCriteria=[{"field":"category","value":"Moose"}]
+ * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]
+ * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
+ * http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
+ * http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
+ *  http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"category","value":"Moose"}]
  *  http://localhost:8000/export/object?categories=["Flora"]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
  */
 
@@ -74,7 +74,8 @@ module.exports = (request, reply) => {
     relation: []
   }
   console.log('categories:', categories)
-  app.db.many(`
+  const categoriesList = categories.map((c) => `'${c}'`)
+  const sql = `
     SELECT
       jsonb_object_keys(properties) AS field
     FROM
@@ -82,11 +83,12 @@ module.exports = (request, reply) => {
       INNER JOIN ae.taxonomy
       ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
     WHERE
-      ae.taxonomy.category IN (${categories})
+      ae.taxonomy.category IN (${categoriesList.join(',')})
     GROUP BY field
-  `)
+  `
+  app.db.many(sql)
     .then((data) => {
-      console.log('data:', data)
+      console.log('taxonomy_object property fields:', data)
       propertyFields.taxonomy_object = data
       return app.db.many(`
         SELECT
@@ -128,7 +130,7 @@ module.exports = (request, reply) => {
        */
       fields.forEach((f) => {
         if (!Object.keys(fieldsByTable).includes(f.table)) {
-          return reply(Boom.badRequest(`Die Tabelle ${f.table} existiert nicht`))
+          return reply(Boom.badRequest(`Die Tabelle '${f.table}' existiert nicht`))
         }
         if (
           (
@@ -137,7 +139,7 @@ module.exports = (request, reply) => {
           ) ||
           !fieldsByTable[f.table].includes(f.field)
         ) {
-          return reply(Boom.badRequest(`Die Eigenschaft ${f.field} existiert nicht`))
+          return reply(Boom.badRequest(`Das Feld '${f.field}' existiert nicht`))
         }
       })
       const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
