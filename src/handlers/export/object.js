@@ -34,7 +34,7 @@
  * test with:
  * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]
  * http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
- *  http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"},{"table":"taxonomy","field":"name"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
+ *  http://localhost:8000/export/object?categories=["Flora"]&fields=[{"table":"object","field":"id"},{"table":"taxonomy","field":"name"},{"table":"taxonomy_object","property":"true","field":"Artname vollständig"}]&criteria=[{"table":"object","field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]
  * http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"id","value":"15544EBD-51D0-470B-9C34-B6F822EACABF"}]&taxonomyFields=["name"]
  *  http://localhost:8000/export/object?fields=[{"table":"object","field":"id"}]&criteria=[{"field":"category","value":"Moose"}]
  *  http://localhost:8000/export/object?categories=["Flora"]&taxonomyObjectCriteria=[{"field":"Gattung","value":"Rosa"}]
@@ -89,8 +89,7 @@ module.exports = (request, reply) => {
   `
   app.db.many(sql)
     .then((data) => {
-      console.log('taxonomy_object property fields:', data)
-      propertyFields.taxonomy_object = data
+      propertyFields.taxonomy_object = data.map((d) => d.field)
       return app.db.many(`
         SELECT
           fieldslist.property_collection_id, array_agg(fieldslist.field) AS fields
@@ -106,6 +105,7 @@ module.exports = (request, reply) => {
     })
     .then((data) => {
       propertyFields.property_collection_object = data
+      // console.log('propertyFields.property_collection_object:', propertyFields.property_collection_object)
       return app.db.many(`
         SELECT
           fieldslist.relation_collection_id, array_agg(fieldslist.field) AS fields
@@ -121,7 +121,7 @@ module.exports = (request, reply) => {
     })
     .then((data) => {
       propertyFields.relation = data
-      console.log('propertyFields:', propertyFields)
+      console.log('propertyFields.relation:', propertyFields.relation)
 
       /**
        * make sure all property-fields are valid db fields
@@ -138,7 +138,10 @@ module.exports = (request, reply) => {
             f.property &&
             !propertyFields[f.table].includes(f.field)
           ) ||
-          !fieldsByTable[f.table].includes(f.field)
+          (
+            !f.property &&
+            !fieldsByTable[f.table].includes(f.field)
+          )
         ) {
           return reply(Boom.badRequest(`Das Feld '${f.field}' existiert nicht`))
         }
@@ -171,7 +174,7 @@ module.exports = (request, reply) => {
           ON ae.object.id = ae.relation_collection_object.object_id
         ${criteriaToSqlString(criteria)}
         GROUP BY
-          ${fieldsToSqlString(fields)}
+          ${fieldsToSqlString(fields, true)}
       `
 
       console.log('object.js, sql:', sql)
