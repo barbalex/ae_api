@@ -43,7 +43,6 @@
 const app = require('ampersand-app')
 const Boom = require('boom')
 const _ = require('lodash')
-const escapeStringForSql = require('../../escapeStringForSql.js')
 const prefixCriteriaFieldWithTable = require('../../prefixCriteriaFieldWithTable.js')
 const criteriaToSqlString = require('../../criteriaToSqlString.js')
 const fieldsToSqlString = require('../../fieldsToSqlString.js')

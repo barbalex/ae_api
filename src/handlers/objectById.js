@@ -68,10 +68,9 @@ const getObjectById = require('../getObjectById.js')
 const getRelationCollectionsByObject = require('../getRelationCollectionsByObject.js')
 const getPropertyCollectionsByObject = require('../getPropertyCollectionsByObject.js')
 const getTaxonomiesByObject = require('../getTaxonomiesByObject.js')
-const escapeStringForSql = require('../escapeStringForSql.js')
 
 module.exports = (request, reply) => {
-  const id = escapeStringForSql(request.params.id)
+  const { id } = request.params
   let object
 
   getObjectById(id)
