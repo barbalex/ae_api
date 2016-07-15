@@ -15,7 +15,7 @@ module.exports = (request, reply) => {
     category() {
       if (!categories.includes(id)) {
         return reply(Boom.badRequest(
-          `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: ${categories.join(', ')}`
+          `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categories.join("', '")}'`
         ))
       }
       getNodesChildrenOfCategory(id)
