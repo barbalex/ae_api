@@ -6,12 +6,14 @@ module.exports = (taxId) =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        id, name
+        id,
+        name,
+        taxonomy_id AS parent_id
       FROM
         ae.taxonomy_object
       WHERE
         taxonomy_id = '${taxId}' AND
-        parent_id IS NULL
+        ae.taxonomy_object.parent_id IS NULL
       ORDER BY
         name
     `

@@ -148,8 +148,7 @@ module.exports = (request, reply) => {
       const joinType = onlyObjectsWithCollectionData ? 'INNER' : 'LEFT'
 
       // select all objects that comply to criteria
-      // TODO: list fields form fields array
-      const sql = `
+      return app.db.many(`
         SELECT
           ${fieldsToSqlString(fields)}
         FROM
@@ -174,10 +173,7 @@ module.exports = (request, reply) => {
         ${criteriaToSqlString(criteria)}
         GROUP BY
           ${fieldsToSqlString(fields, true)}
-      `
-
-      console.log('object.js, sql:', sql)
-      return app.db.many(sql)
+      `)
     })
     .then((data) => reply(null, data))
     .catch((error) =>

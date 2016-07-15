@@ -2,19 +2,13 @@
 
 const app = require('ampersand-app')
 
-module.exports = (category) =>
+module.exports = () =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        id,
-        name,
-        category AS parent_id
+        *
       FROM
-        ae.taxonomy
-      WHERE
-        category = '${category}'
-      ORDER BY
-        name
+        ae.category
     `
     app.db.many(sql)
       .then((data) => {
