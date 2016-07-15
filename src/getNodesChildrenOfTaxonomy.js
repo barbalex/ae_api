@@ -11,10 +11,7 @@ module.exports = (taxId) =>
         ae.taxonomy_object
       WHERE
         taxonomy_id = '${taxId}' AND
-        (
-          parent_id IS NULL OR
-          parent_id = id
-        )
+        parent_id IS NULL
       ORDER BY
         name
     `

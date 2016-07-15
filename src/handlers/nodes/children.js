@@ -1,6 +1,8 @@
 'use strict'
 
+const Promise = require('bluebird')
 const Boom = require('boom')
+const Joi = Promise.promisifyAll(require('joi'))
 const categories = require('../../categories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
@@ -33,14 +35,20 @@ module.exports = (request, reply) => {
     },
     taxonomy() {
       // TODO
-      getTaxonomyId(id)
-        .then((idReturned) => {
-          // check id exists
-          if (!idReturned) {
-            return reply(Boom.badRequest(
-              `Es existiert keine Taxonomie mit der id '${id}'`
-            ))
-          }
+      Joi.validateAsync(
+        id,
+        Joi.string().guid()
+      )
+        .catch(() => reply(Boom.badRequest(
+          `Die übergebene Taxonomie ID muss eine gültige GUID sein`
+        )))
+        .then(() => getTaxonomyId(id))
+        .catch(() =>
+          reply(Boom.badRequest(
+            `Es existiert keine Taxonomie mit der id '${id}'`
+          ))
+        )
+        .then(() => {
           getNodesChildrenOfTaxonomy(id)
             .then((children) => {
               if (children && children.length) {
@@ -52,6 +60,7 @@ module.exports = (request, reply) => {
               reply(Boom.badImplementation(error), null)
             )
         })
+        .catch((error) => reply(Boom.badImplementation(error), null))
     },
     taxonomy_object() {
       // TODO: validate id is taxonomy_object_id
