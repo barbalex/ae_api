@@ -1,13 +1,13 @@
 'use strict'
 
-const Promise = require('bluebird')
 const Boom = require('boom')
-const Joi = Promise.promisifyAll(require('joi'))
+const isUuid = require('is-uuid')
 const categories = require('../../categories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
 const getTaxonomyId = require('../../getTaxonomyId.js')
+const getTaxonomyObjectId = require('../../getTaxonomyObjectId.js')
 
 module.exports = (request, reply) => {
   const {
@@ -25,54 +25,67 @@ module.exports = (request, reply) => {
       getNodesChildrenOfCategory(id)
         .then((children) => {
           if (children && children.length) {
-            return reply(null, children)
+            reply(null, children)
+          } else {
+            reply(Boom.badImplementation('no children received'), null)
           }
-          throw 'no children received'  /* eslint no-throw-literal:0 */
         })
         .catch((error) =>
           reply(Boom.badImplementation(error), null)
         )
     },
     taxonomy() {
-      // TODO
-      Joi.validateAsync(
-        id,
-        Joi.string().guid()
-      )
-        .catch(() => reply(Boom.badRequest(
-          `Die übergebene Taxonomie ID muss eine gültige GUID sein`
-        )))
-        .then(() => getTaxonomyId(id))
+      // ensure a guid is passed as id
+      if (!isUuid.v4(id)) {
+        return reply(Boom.badRequest(
+          `Die übergebene ID der Taxonomie muss eine gültige GUID sein`
+        ))
+      }
+      getTaxonomyId(id)
         .catch(() =>
           reply(Boom.badRequest(
             `Es existiert keine Taxonomie mit der id '${id}'`
           ))
         )
-        .then(() => {
-          getNodesChildrenOfTaxonomy(id)
+        // get children
+        .then(() => getNodesChildrenOfTaxonomy(id))
+        .then((children) => {
+          if (children && children.length) {
+            reply(null, children)
+          } else {
+            reply(Boom.badImplementation('no children received'), null)
+          }
+        })
+        .catch((error) =>
+          reply(Boom.badImplementation(error), null)
+        )
+    },
+    taxonomy_object() {
+      // ensure a guid is passed as id
+      if (!isUuid.v4(id)) {
+        return reply(Boom.badRequest(
+          `Die übergebene ID des Taxonomie-Objekts muss eine gültige GUID sein`
+        ))
+      }
+      getTaxonomyObjectId(id)
+        .catch(() =>
+          reply(Boom.badRequest(
+            `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
+          ))
+        )
+        // get children
+        .then(() =>
+          getNodesChildrenOfTaxonomyObject(id)
             .then((children) => {
               if (children && children.length) {
-                return reply(null, children)
+                reply(null, children)
+              } else {
+                reply(Boom.badImplementation('no children received'), null)
               }
-              throw 'no children received'  /* eslint no-throw-literal:0 */
             })
             .catch((error) =>
               reply(Boom.badImplementation(error), null)
             )
-        })
-        .catch((error) => reply(Boom.badImplementation(error), null))
-    },
-    taxonomy_object() {
-      // TODO: validate id is taxonomy_object_id
-      getNodesChildrenOfTaxonomyObject(id)
-        .then((children) => {
-          if (children && children.length) {
-            return reply(null, children)
-          }
-          throw 'no children received'  /* eslint no-throw-literal:0 */
-        })
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
         )
     }
   }
