@@ -2,15 +2,19 @@
 
 const app = require('ampersand-app')
 
-module.exports = (category) =>
+module.exports = (taxId) =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
         id, name
       FROM
-        ae.taxonomy
+        ae.taxonomy_object
       WHERE
-        category = '${category}'
+        taxonomy_id = '${taxId}' AND
+        (
+          parent_id IS NULL OR
+          parent_id = id
+        )
       ORDER BY
         name
     `
