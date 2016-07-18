@@ -2,7 +2,7 @@
 
 const Boom = require('boom')
 const isUuid = require('is-uuid')
-const categories = require('../../categories.js')
+const getCategories = require('../../getCategories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
@@ -14,25 +14,29 @@ module.exports = (request, reply) => {
     type,
     id,
   } = request.params
+  let categories = []
+  const nodes = []
 
   const cases = {
     category() {
-      if (!categories.includes(id)) {
-        return reply(Boom.badRequest(
-          `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categories.join("', '")}'`
-        ))
-      }
-      getNodesChildrenOfCategory(id)
-        .then((children) => {
-          if (children && children.length) {
-            reply(null, children)
-          } else {
-            reply(Boom.badImplementation('no children received'), null)
+      getCategories()
+        .then((result) => {
+          categories = result
+          nodes.push(categories)
+          if (!categories.includes(id)) {
+            return reply(Boom.badRequest(
+              `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categories.join("', '")}'`
+            ))
           }
+          getNodesChildrenOfCategory(id)
+            .then((children) => {
+              nodes.push(children)
+              reply(null, nodes)
+            })
+            .catch((error) =>
+              reply(Boom.badImplementation(error), null)
+            )
         })
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
-        )
     },
     taxonomy() {
       // ensure a guid is passed as id
@@ -76,6 +80,10 @@ module.exports = (request, reply) => {
         // get children
         .then(() =>
           getNodesChildrenOfTaxonomyObject(id)
+            .then((children) => {
+              // save children
+              return getNodesAncestorsOfTaxonomyObject(id)
+            })
             .then((children) => {
               if (children && children.length) {
                 reply(null, children)

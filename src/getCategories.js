@@ -12,7 +12,8 @@ module.exports = () =>
     `
     app.db.many(sql)
       .then((data) => {
-        if (data) return resolve(data)
+        const categories = data.map((d) => d.name)
+        if (categories) return resolve(categories)
         reject(`no data received from db`)
       })
       .catch((error) => reject(error))

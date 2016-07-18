@@ -2,7 +2,7 @@
 
 const Boom = require('boom')
 const isUuid = require('is-uuid')
-const categories = require('../../categories.js')
+const getCategories = require('../../getCategories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
@@ -17,22 +17,21 @@ module.exports = (request, reply) => {
 
   const cases = {
     category() {
-      if (!categories.includes(id)) {
-        return reply(Boom.badRequest(
-          `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categories.join("', '")}'`
-        ))
-      }
-      getNodesChildrenOfCategory(id)
-        .then((children) => {
-          if (children && children.length) {
-            reply(null, children)
-          } else {
-            reply(Boom.badImplementation('no children received'), null)
+      getCategories()
+        .then((categories) => {
+          if (!categories.includes(id)) {
+            return reply(Boom.badRequest(
+              `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categories.join("', '")}'`
+            ))
           }
+          getNodesChildrenOfCategory(id)
+            .then((children) =>
+              reply(null, children)
+            )
+            .catch((error) =>
+              reply(Boom.badImplementation(error), null)
+            )
         })
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
-        )
     },
     taxonomy() {
       // ensure a guid is passed as id
