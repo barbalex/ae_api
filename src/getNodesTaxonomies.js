@@ -2,8 +2,13 @@
 
 const app = require('ampersand-app')
 
-module.exports = (category) =>
+module.exports = (id) =>
   new Promise((resolve, reject) => {
+    const whereClause = (
+      id ?
+      `WHERE id = '${id}'` :
+      ''
+    )
     const sql = `
       SELECT
         'taxonomy' as type,
@@ -12,8 +17,7 @@ module.exports = (category) =>
         category AS parent_id
       FROM
         ae.taxonomy
-      WHERE
-        category = '${category}'
+      ${whereClause}
       ORDER BY
         name
     `

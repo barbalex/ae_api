@@ -2,24 +2,23 @@
 
 const app = require('ampersand-app')
 
-module.exports = (category) =>
+module.exports = () =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        'taxonomy' as type,
-        id,
-        name,
-        category AS parent_id
+        *
       FROM
-        ae.taxonomy
-      WHERE
-        category = '${category}'
-      ORDER BY
-        name
+        ae.category
     `
     app.db.many(sql)
       .then((data) => {
-        if (data) return resolve(data)
+        const categories = data.map((d) => ({
+          type: 'category',
+          id: d.name,
+          parent_id: null,
+          name: d.name,
+        }))
+        if (categories) return resolve(categories)
         reject(`no data received from db`)
       })
       .catch((error) => reject(error))

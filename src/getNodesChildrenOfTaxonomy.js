@@ -6,6 +6,7 @@ module.exports = (taxId) =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
+        'taxonomy_object' as type,
         id,
         name,
         taxonomy_id AS parent_id

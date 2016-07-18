@@ -2,41 +2,40 @@
 
 const Boom = require('boom')
 const isUuid = require('is-uuid')
-const getCategories = require('../../getCategories.js')
+const getNodesCategories = require('../../getNodesCategories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
-const getTaxonomyId = require('../../getTaxonomyId.js')
-const getTaxonomyObjectId = require('../../getTaxonomyObjectId.js')
+const getNodesAncestorsOfTaxonomyObject = require('../../getNodesAncestorsOfTaxonomyObject.js')
+const getNodesTaxonomies = require('../../getNodesTaxonomies.js')
+const getTaxonomyObject = require('../../getTaxonomyObject.js')
+const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
+const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
 
 module.exports = (request, reply) => {
   const {
     type,
     id,
   } = request.params
-  let categories = []
+  let categoryNodes = []
   const nodes = []
 
   const cases = {
     category() {
-      getCategories()
-        .then((result) => {
-          categories = result
-          nodes.push(categories)
-          if (!categories.includes(id)) {
-            return reply(Boom.badRequest(
-              `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categories.join("', '")}'`
-            ))
-          }
-          getNodesChildrenOfCategory(id)
-            .then((children) => {
-              nodes.push(children)
-              reply(null, nodes)
-            })
-            .catch((error) =>
-              reply(Boom.badImplementation(error), null)
-            )
+      const categoryIds = categoryNodes.map((c) => c.name)
+      if (!categoryIds.includes(id)) {
+        return reply(Boom.badRequest(
+          `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categoryIds.join("', '")}'`
+        ))
+      }
+      getNodesChildrenOfCategory(id)
+        .then((children) => {
+          nodes.push(children)
+          reply(null, nodes)
         })
+        .catch((error) =>
+          reply(Boom.badImplementation(error), null)
+        )
     },
     taxonomy() {
       // ensure a guid is passed as id
@@ -45,20 +44,20 @@ module.exports = (request, reply) => {
           `Die übergebene ID der Taxonomie muss eine gültige GUID sein`
         ))
       }
-      getTaxonomyId(id)
+      getNodesTaxonomies(id)
         .catch(() =>
           reply(Boom.badRequest(
             `Es existiert keine Taxonomie mit der id '${id}'`
           ))
         )
         // get children
-        .then(() => getNodesChildrenOfTaxonomy(id))
-        .then((children) => {
-          if (children && children.length) {
-            reply(null, children)
-          } else {
-            reply(Boom.badImplementation('no children received'), null)
-          }
+        .then((taxonomiesNodes) => {
+          nodes.push(taxonomiesNodes)
+          return getNodesChildrenOfTaxonomy(id)
+        })
+        .then((childrenNodes) => {
+          nodes.push(childrenNodes)
+          reply(null, nodes)
         })
         .catch((error) =>
           reply(Boom.badImplementation(error), null)
@@ -71,32 +70,44 @@ module.exports = (request, reply) => {
           `Die übergebene ID des Taxonomie-Objekts muss eine gültige GUID sein`
         ))
       }
-      getTaxonomyObjectId(id)
+      getCategoryOfTaxonomyObject(id)
+        .then((result) =>
+          getNodesTaxonomiesOfCategory(result.category)
+        )
+        .catch((error) =>
+          reply(Boom.badImplementation(error), null)
+        )
+        // get children
+        .then((taxonomiesNodes) => {
+          nodes.push(taxonomiesNodes)
+          return getNodesChildrenOfTaxonomyObject(id)
+        })
         .catch(() =>
           reply(Boom.badRequest(
             `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
           ))
         )
-        // get children
-        .then(() =>
-          getNodesChildrenOfTaxonomyObject(id)
-            .then((children) => {
-              // save children
-              return getNodesAncestorsOfTaxonomyObject(id)
-            })
-            .then((children) => {
-              if (children && children.length) {
-                reply(null, children)
-              } else {
-                reply(Boom.badImplementation('no children received'), null)
-              }
-            })
-            .catch((error) =>
-              reply(Boom.badImplementation(error), null)
-            )
+        .then((childrenNodes) => {
+          nodes.push(childrenNodes)
+          return getNodesAncestorsOfTaxonomyObject(id)
+        })
+        .then((ancestorNodes) => {
+          nodes.push(ancestorNodes)
+          reply(null, nodes)
+        })
+        .catch((error) =>
+          reply(Boom.badImplementation(error), null)
         )
     }
   }
 
-  cases[type]()
+  getNodesCategories()
+    .then((result) => {
+      categoryNodes = result
+      nodes.push(categoryNodes)
+      cases[type]()
+    })
+    .catch((error) =>
+      reply(Boom.badImplementation(error), null)
+    )
 }
