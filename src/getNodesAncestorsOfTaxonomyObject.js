@@ -5,19 +5,40 @@ const app = require('ampersand-app')
 module.exports = (taxId) =>
   new Promise((resolve, reject) => {
     const sql = `
+    WITH RECURSIVE tree AS (
+      SELECT
+        id,
+        ARRAY[]::uuid[] AS ancestors
+      FROM
+        ae.taxonomy_object
+      WHERE
+        parent_id IS NULL
+
+      UNION ALL
+
+      SELECT
+        ae.taxonomy_object.id,
+        tree.ancestors || ae.taxonomy_object.parent_id
+      FROM
+        ae.taxonomy_object,
+        tree
+      WHERE
+        ae.taxonomy_object.parent_id = tree.id
+    )
     SELECT
       'taxonomy_object' AS type,
-      id,
+      ae.taxonomy_object.id,
       CASE
         WHEN parent_id IS NULL THEN taxonomy_id
         ELSE parent_id
       END
       AS parent_id,
-      name
+      name,
+      tree.ancestors as path
     FROM
-      ae.taxonomy_object
+      ae.taxonomy_object, tree
     WHERE
-      id IN (
+      ae.taxonomy_object.id IN (
         WITH RECURSIVE tree AS (
           SELECT
             id,
