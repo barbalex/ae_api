@@ -12,11 +12,12 @@ module.exports = () =>
     `
     app.db.many(sql)
       .then((data) => {
-        const categories = data.map((d) => ({
+        const categories = data.map((c) => ({
           type: 'category',
-          id: d.name,
+          id: c.name,
           parent_id: 'root',
-          name: d.name,
+          name: c.name,
+          path: [c.name]
         }))
         /**
          * for d3-hierarchy's stratify to work on all nodes

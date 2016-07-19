@@ -19,6 +19,9 @@ module.exports = (category) =>
     `
     app.db.many(sql)
       .then((data) => {
+        data.forEach((d) => {
+          d.path = [d.category, d.id]
+        })
         if (data) return resolve(data)
         reject(`no data received from db`)
       })
