@@ -15,10 +15,19 @@ module.exports = () =>
         const categories = data.map((d) => ({
           type: 'category',
           id: d.name,
-          parent_id: null,
+          parent_id: 'root',
           name: d.name,
         }))
-        if (categories) return resolve(categories)
+        /**
+         * for d3-hierarchy's stratify to work on all nodes
+         * there needs to be a single root node
+         */
+        categories.unshift({
+          id: 'root',
+          parent_id: null,
+          name: 'root',
+        })
+        if (categories.length > 1) return resolve(categories)
         reject(`no data received from db`)
       })
       .catch((error) => reject(error))
