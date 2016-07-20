@@ -8,7 +8,6 @@ const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js'
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
 const getNodesAncestorsOfTaxonomyObject = require('../../getNodesAncestorsOfTaxonomyObject.js')
 const getNodesTaxonomies = require('../../getNodesTaxonomies.js')
-const getTaxonomyObject = require('../../getTaxonomyObject.js')
 const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
 
