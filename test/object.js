@@ -23,4 +23,18 @@ describe('/object', () => {
       done()
     })
   })
+  it(`should return error if id is not a valid guid`, (done) => {
+    const url = '/object/notAGuid'
+    server.inject({ method, url }, (res) => {
+      expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
+  it(`should return error if id is not an object id`, (done) => {
+    const url = '/object/0000e5ae-00ae-43e4-8bb5-3f3100928506'
+    server.inject({ method, url }, (res) => {
+      expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
 })

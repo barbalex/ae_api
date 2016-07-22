@@ -74,6 +74,11 @@ module.exports = (request, reply) => {
   let object
 
   getObjectById(id)
+    .catch(() =>
+      reply(Boom.badRequest(
+        `Es existiert kein Objekt mit der id '${id}'.`
+      ))
+    )
     .then((data) => {
       object = data
       return getRelationCollectionsByObject(id)
