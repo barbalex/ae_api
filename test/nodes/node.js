@@ -100,4 +100,18 @@ describe('/node/{type}/{id}', () => {
       done()
     })
   })
+  it(`should return error for type 'taxonomy' if id is not a taxonomy`, (done) => {
+    const url = '/node/taxonomy/5444e7eb-177f-4faf-ba44-0e3da1b391ee'
+    server.inject({ method, url }, (res) => {
+      expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
+  it(`should return error for type 'taxonomy' if id is not a valid guid`, (done) => {
+    const url = '/node/taxonomy/notAGuid'
+    server.inject({ method, url }, (res) => {
+      expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
 })
