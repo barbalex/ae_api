@@ -23,6 +23,7 @@ describe('/nodes', () => {
     const url = '/nodes'
     server.inject({ method, url }, (res) => {
       expect(res.result.length).to.be.above(5)
+      expect(res.result[0].id).to.equal('root')
       done()
     })
   })
