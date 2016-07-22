@@ -10,12 +10,16 @@ const getNodesAncestorsOfTaxonomyObject = require('../../getNodesAncestorsOfTaxo
 const getNodesTaxonomies = require('../../getNodesTaxonomies.js')
 const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
+const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
 
 module.exports = (request, reply) => {
   const {
     type,
-    id,
-  } = request.params
+    objectId,
+  } = request.query
+  let {
+    id
+  } = request.query
   let categoryNodes = []
   const nodes = []
 
@@ -100,10 +104,27 @@ module.exports = (request, reply) => {
     }
   }
 
+  // TODO:
+  // if !id && objectId
+  // get taxonomy_object.id from db
+
   getNodesCategories()
     .then((result) => {
       categoryNodes = result
       nodes.push(categoryNodes)
+      console.log('handlers/node, id:', id)
+      console.log('handlers/node, objectId:', objectId)
+      if (!id && objectId) {
+        return getTaxonomyObjectIdFromObjectId(objectId)
+      }
+      return true
+    })
+    .then((result) => {
+      console.log('handlers/node, result:', result)
+      console.log('handlers/node, result.id:', result.id)
+      if (result) {
+        id = result.id
+      }
       cases[type]()
     })
     .catch((error) =>

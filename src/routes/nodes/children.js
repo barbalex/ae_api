@@ -2,8 +2,8 @@
 
 /**
  * test with:
- * correct: http://localhost:8000/nodes/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93/children
- * error: http://localhost:8000/nodes/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b33/children
+ * correct: http://localhost:8000/nodes/taxonomy_object/08bda0ac-e382-482a-b9da-e06e9a421540/children
+ * error: http://localhost:8000/nodes/taxonomy_object/08bda0ac-e382-482a-b9da-e06e9a421540/children
  */
 
 const Joi = require('joi')
