@@ -9,6 +9,7 @@ const lab = exports.lab = Lab.script()
 const describe = lab.describe
 const it = lab.it
 const expect = Code.expect
+const method = 'GET'
 
 // 3. start server
 const server = require('../../server.js')
@@ -16,7 +17,6 @@ const server = require('../../server.js')
 // 4. test
 describe('/nodes', () => {
   it('should return more than 5 rows', (done) => {
-    const method = 'GET'
     const url = '/nodes'
     server.inject({ method, url }, (res) => {
       expect(res.result.length).to.be.above(5)
@@ -24,7 +24,6 @@ describe('/nodes', () => {
     })
   })
   it('first result should be root', (done) => {
-    const method = 'GET'
     const url = '/nodes'
     server.inject({ method, url }, (res) => {
       expect(res.result[0].id).to.equal('root')
