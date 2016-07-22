@@ -32,11 +32,20 @@ module.exports = (parentId) =>
         ae.taxonomy_object.name,
         tree.ancestors as path
       FROM
-        ae.taxonomy_object, tree
+        ae.taxonomy_object
+          INNER JOIN tree
+          on tree.id = ae.taxonomy_object.id
       WHERE
-        parent_id = '${parentId}'
+        ae.taxonomy_object.id IN (
+          SELECT
+            id
+          FROM
+            ae.taxonomy_object
+          WHERE
+            parent_id = '${parentId}'
+        )
       ORDER BY
-        name
+        ae.taxonomy_object.name
     `
     app.db.many(sql)
       .then((data) => {
