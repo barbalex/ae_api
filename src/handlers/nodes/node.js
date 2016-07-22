@@ -13,15 +13,12 @@ const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
 
 module.exports = (request, reply) => {
-  const {
-    type,
-    objectId,
-  } = request.query
   let {
-    id
-  } = request.query
+    type,
+    id,
+  } = request.params
   let categoryNodes = []
-  const nodes = []
+  let nodes = []
 
   const cases = {
     category() {
@@ -33,7 +30,7 @@ module.exports = (request, reply) => {
       }
       getNodesChildrenOfCategory(id)
         .then((children) => {
-          nodes.push(children)
+          nodes = nodes.concat(children)
           reply(null, nodes)
         })
         .catch((error) =>
@@ -111,18 +108,18 @@ module.exports = (request, reply) => {
   getNodesCategories()
     .then((result) => {
       categoryNodes = result
-      nodes.push(categoryNodes)
+      nodes = nodes.concat(categoryNodes)
       console.log('handlers/node, id:', id)
-      console.log('handlers/node, objectId:', objectId)
-      if (!id && objectId) {
-        return getTaxonomyObjectIdFromObjectId(objectId)
+      if (type === 'object') {
+        return getTaxonomyObjectIdFromObjectId(id)
       }
-      return true
+      return false
     })
     .then((result) => {
       console.log('handlers/node, result:', result)
-      console.log('handlers/node, result.id:', result.id)
-      if (result) {
+      if (type === 'object') {
+        console.log('handlers/node, result.id:', result.id)
+        type = 'taxonomy_object'
         id = result.id
       }
       cases[type]()
