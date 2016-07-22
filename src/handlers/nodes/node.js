@@ -52,11 +52,11 @@ module.exports = (request, reply) => {
         )
         // get children
         .then((taxonomiesNodes) => {
-          nodes.push(taxonomiesNodes)
+          nodes = nodes.concat(taxonomiesNodes)
           return getNodesChildrenOfTaxonomy(id)
         })
         .then((childrenNodes) => {
-          nodes.push(childrenNodes)
+          nodes = nodes.concat(childrenNodes)
           reply(null, nodes)
         })
         .catch((error) =>
@@ -79,7 +79,7 @@ module.exports = (request, reply) => {
         )
         // get children
         .then((taxonomiesNodes) => {
-          nodes.push(taxonomiesNodes)
+          nodes = nodes.concat(taxonomiesNodes)
           return getNodesChildrenOfTaxonomyObject(id)
         })
         .catch(() =>
@@ -88,11 +88,11 @@ module.exports = (request, reply) => {
           ))
         )
         .then((childrenNodes) => {
-          nodes.push(childrenNodes)
+          nodes = nodes.concat(childrenNodes)
           return getNodesAncestorsOfTaxonomyObject(id)
         })
         .then((ancestorNodes) => {
-          nodes.push(ancestorNodes)
+          nodes = nodes.concat(ancestorNodes)
           reply(null, nodes)
         })
         .catch((error) =>

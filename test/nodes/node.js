@@ -48,14 +48,14 @@ describe('/node/{type}/{id}', () => {
     })
   })
   it('should return error if type is not expected', (done) => {
-    const url = '/node/wrongCategory/Fauna'
+    const url = '/node/wrongType/Fauna'
     server.inject({ method, url }, (res) => {
       expect(res.statusCode).to.equal(400)
       done()
     })
   })
   it(`should return error for type 'category' if id is not a category`, (done) => {
-    const url = '/node/wrongCategory/wrongId'
+    const url = '/node/category/wrongId'
     server.inject({ method, url }, (res) => {
       expect(res.statusCode).to.equal(400)
       done()
