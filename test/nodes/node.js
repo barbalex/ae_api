@@ -26,24 +26,24 @@ describe('/node/{type}/{id}', () => {
   it(`should return a root for type 'category' and id 'Fauna'`, (done) => {
     const url = '/node/category/Fauna'
     server.inject({ method, url }, (res) => {
-      const rootNode = res.result.find((n) => n.id === 'root')
-      expect(rootNode).to.exist()
+      const node = res.result.find((n) => n.id === 'root')
+      expect(node).to.exist()
       done()
     })
   })
   it(`should return a category for type 'category' and id 'Fauna'`, (done) => {
     const url = '/node/category/Fauna'
     server.inject({ method, url }, (res) => {
-      const categoryNode = res.result.find((n) => n.type === 'category')
-      expect(categoryNode).to.exist()
+      const node = res.result.find((n) => n.type === 'category')
+      expect(node).to.exist()
       done()
     })
   })
   it(`should return a Taxonomy for type 'category' and id 'Fauna'`, (done) => {
     const url = '/node/category/Fauna'
     server.inject({ method, url }, (res) => {
-      const taxonomyNode = res.result.find((n) => n.type === 'taxonomy')
-      expect(taxonomyNode).to.exist()
+      const node = res.result.find((n) => n.type === 'taxonomy')
+      expect(node).to.exist()
       done()
     })
   })
@@ -58,6 +58,45 @@ describe('/node/{type}/{id}', () => {
     const url = '/node/category/wrongId'
     server.inject({ method, url }, (res) => {
       expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
+  it(`should return more than 3 rows for type 'taxonomy' and id '5444e7eb-177f-4faf-ba44-0e3da1b391e0'`, (done) => {
+    const url = '/node/taxonomy/5444e7eb-177f-4faf-ba44-0e3da1b391e0'
+    server.inject({ method, url }, (res) => {
+      expect(res.result.length).to.be.above(2)
+      done()
+    })
+  })
+  it(`should return a root for type 'taxonomy' and id '5444e7eb-177f-4faf-ba44-0e3da1b391e0'`, (done) => {
+    const url = '/node/taxonomy/5444e7eb-177f-4faf-ba44-0e3da1b391e0'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.id === 'root')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return a category for type 'taxonomy' and id '5444e7eb-177f-4faf-ba44-0e3da1b391e0'`, (done) => {
+    const url = '/node/taxonomy/5444e7eb-177f-4faf-ba44-0e3da1b391e0'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.type === 'category')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return a taxonomy for type 'taxonomy' and id '5444e7eb-177f-4faf-ba44-0e3da1b391e0'`, (done) => {
+    const url = '/node/taxonomy/5444e7eb-177f-4faf-ba44-0e3da1b391e0'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.type === 'taxonomy')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return a taxonomy_object for type 'taxonomy' and id '5444e7eb-177f-4faf-ba44-0e3da1b391e0'`, (done) => {
+    const url = '/node/taxonomy/5444e7eb-177f-4faf-ba44-0e3da1b391e0'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.type === 'taxonomy_object')
+      expect(node).to.exist()
       done()
     })
   })
