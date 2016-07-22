@@ -66,10 +66,17 @@ describe('/nodes/{type}/{id}/children', () => {
     })
   })
   // TODO: get this to work
-  it(`should return more than 0 rows for type 'taxonomy_object' and id 'ff56b132-ecdf-4301-8c62-b24b3e258b93'`, (done) => {
-    const url = '/nodes/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93/children'
+  it(`should return more than 0 rows for type 'taxonomy_object' and id '08bda0ac-e382-482a-b9da-e06e9a421540'`, (done) => {
+    const url = '/nodes/taxonomy_object/08bda0ac-e382-482a-b9da-e06e9a421540/children'
     server.inject({ method, url }, (res) => {
       expect(res.result.length).to.be.above(0)
+      done()
+    })
+  })
+  it(`should return taxonomy_objects for type 'taxonomy_object' and id '08bda0ac-e382-482a-b9da-e06e9a421540'`, (done) => {
+    const url = '/nodes/taxonomy_object/08bda0ac-e382-482a-b9da-e06e9a421540/children'
+    server.inject({ method, url }, (res) => {
+      expect(res.result[0].type).to.equal('taxonomy_object')
       done()
     })
   })
