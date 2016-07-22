@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "set NODE_ENV=development&& nodemon startServer.js",
     "start": "sudo setcap cap_net_bind_service=+ep $(which node) && set NODE_ENV=production && node startServer.js",
-    "test": "eslint src/**",
+    "test": "lab",
     "yolo": "gulp sftp_src && gulp sftp_top"
   },
   "repository": {

@@ -4,6 +4,8 @@
 
 'use strict'
 
+/* eslint global-require:0 */
+
 const Hapi = require('hapi')
 const Inert = require('inert')
 const Vision = require('vision')
@@ -12,6 +14,9 @@ const HapiAuthCookie = require('hapi-auth-cookie')
 const glob = require('glob')
 const dbConnection = require('./dbConnection.js')()
 const cookiePassword = require('./cookiePassword.js')
+const app = require('ampersand-app')
+const pgp = require('pg-promise')()
+const config = require('./configuration.js')
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 let serverOptions = {
@@ -74,6 +79,14 @@ server.register([Inert, HapiAuthCookie, Vision, loutConfig], (error) => {
     .forEach((file) =>
       server.route(require(`./${file}`))
     )
+
+  const db = pgp(config.pg.connectionString)
+  app.extend({
+    init() {
+      this.db = db
+    }
+  })
+  app.init()
 })
 
 module.exports = server
