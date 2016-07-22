@@ -1,28 +1,32 @@
 'use strict'
 
-// Load modules
-
+// 1. Load modules
 const Code = require('code')
 const Lab = require('lab')
 
-// test shortcuts
-
+// 2. set up shortcuts
 const lab = exports.lab = Lab.script()
 const describe = lab.describe
 const it = lab.it
 const expect = Code.expect
 
-// start server
-const server = require('../server.js')
+// 3. start server
+const server = require('../../server.js')
 
-// test
-
+// 4. test
 describe('/nodes', () => {
   it('should return more than 5 rows', (done) => {
     const method = 'GET'
     const url = '/nodes'
     server.inject({ method, url }, (res) => {
       expect(res.result.length).to.be.above(5)
+      done()
+    })
+  })
+  it('first result should be root', (done) => {
+    const method = 'GET'
+    const url = '/nodes'
+    server.inject({ method, url }, (res) => {
       expect(res.result[0].id).to.equal('root')
       done()
     })

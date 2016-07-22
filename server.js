@@ -20,10 +20,10 @@ const config = require('./configuration.js')
 // wird nur in Entwicklung genutzt
 // in new Hapi.Server() einsetzen
 let serverOptions = {
-  debug: {
+  /*debug: {
     log: ['error'],
     request: ['error']
-  }
+  }*/
 }
 if (process.env.NODE_ENV === 'production') {
   serverOptions = {}
