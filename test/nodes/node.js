@@ -114,4 +114,5 @@ describe('/node/{type}/{id}', () => {
       done()
     })
   })
+  // TODO: tests for /node/taxonomy_object
 })
