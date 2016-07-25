@@ -71,8 +71,8 @@ module.exports = (request, reply) => {
         ))
       }
       getCategoryOfTaxonomyObject(id)
-        .then((result) =>
-          getNodesTaxonomiesOfCategory(result.category)
+        .then((category) =>
+          getNodesTaxonomiesOfCategory(category)
         )
         .catch((error) =>
           reply(Boom.badImplementation(error), null)
@@ -89,6 +89,7 @@ module.exports = (request, reply) => {
         )
         .then((childrenNodes) => {
           nodes = nodes.concat(childrenNodes)
+          console.log('handlers/node, nodes after adding childrenNodes:', nodes)
           return getNodesAncestorsOfTaxonomyObject(id)
         })
         .then((ancestorNodes) => {
@@ -109,16 +110,13 @@ module.exports = (request, reply) => {
     .then((result) => {
       categoryNodes = result
       nodes = nodes.concat(categoryNodes)
-      console.log('handlers/node, id:', id)
       if (type === 'object') {
         return getTaxonomyObjectIdFromObjectId(id)
       }
       return false
     })
     .then((result) => {
-      console.log('handlers/node, result:', result)
       if (type === 'object') {
-        console.log('handlers/node, result.id:', result.id)
         type = 'taxonomy_object'
         id = result.id
       }
