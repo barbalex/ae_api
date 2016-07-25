@@ -42,7 +42,7 @@ module.exports = (parentId) =>
       ORDER BY
         ae.taxonomy_object.name
     `
-    app.db.many(sql)
+    app.db.any(sql)
       .then((data) => {
         const nodesChildren = data.map((n) => ({
           type: 'taxonomy_object',

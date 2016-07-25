@@ -115,4 +115,57 @@ describe('/node/{type}/{id}', () => {
     })
   })
   // TODO: tests for /node/taxonomy_object
+  it(`should return more than 4 rows for type 'taxonomy_object' and id 'ff56b132-ecdf-4301-8c62-b24b3e258b93'`, (done) => {
+    const url = '/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93'
+    server.inject({ method, url }, (res) => {
+      expect(res.result.length).to.be.above(3)
+      done()
+    })
+  })
+  it(`should return a root for type 'taxonomy_object' and id 'ff56b132-ecdf-4301-8c62-b24b3e258b93'`, (done) => {
+    const url = '/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.id === 'root')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return a category for type 'taxonomy_object' and id 'ff56b132-ecdf-4301-8c62-b24b3e258b93'`, (done) => {
+    const url = '/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.type === 'category')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return a taxonomy for type 'taxonomy_object' and id 'ff56b132-ecdf-4301-8c62-b24b3e258b93'`, (done) => {
+    const url = '/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.type === 'taxonomy')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return a taxonomy_object for type 'taxonomy_object' and id 'ff56b132-ecdf-4301-8c62-b24b3e258b93'`, (done) => {
+    const url = '/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93'
+    server.inject({ method, url }, (res) => {
+      const node = res.result.find((n) => n.type === 'taxonomy_object')
+      expect(node).to.exist()
+      done()
+    })
+  })
+  it(`should return error for type 'taxonomy_object' if id is not a taxonomy_object`, (done) => {
+    const url = '/node/taxonomy_object/08ff3989-779b-406f-b015-ea6de301513f'
+    server.inject({ method, url }, (res) => {
+      expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
+  it(`should return error for type 'taxonomy_object' if id is not a valid guid`, (done) => {
+    const url = '/node/taxonomy_object/notAGuid'
+    server.inject({ method, url }, (res) => {
+      expect(res.statusCode).to.equal(400)
+      done()
+    })
+  })
 })

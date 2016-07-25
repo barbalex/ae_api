@@ -17,7 +17,7 @@ module.exports = (category) =>
       ORDER BY
         name
     `
-    app.db.many(sql)
+    app.db.any(sql)
       .then((data) => {
         data.forEach((d) => {
           d.path = [d.parent_id, d.id]

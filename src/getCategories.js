@@ -10,11 +10,10 @@ module.exports = () =>
       FROM
         ae.category
     `
-    app.db.many(sql)
+    app.db.any(sql)
       .then((data) => {
         const categories = data.map((d) => d.name)
-        if (categories) return resolve(categories)
-        reject(`no data received from db`)
+        resolve(categories)
       })
       .catch((error) => reject(error))
   })

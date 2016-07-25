@@ -13,9 +13,10 @@ module.exports = (id) =>
         id = $1
     `
     app.db.one(sql, [id])
-      .then((data) => {
-        if (data) return resolve(data)
-        reject(`no object received from db`)
-      })
-      .catch((error) => reject(error))
+      .then((data) =>
+        resolve(data)
+      )
+      .catch((error) =>
+        reject(error)
+      )
   })

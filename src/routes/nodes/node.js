@@ -3,6 +3,7 @@
 /**
  * test with:
  * correct: http://localhost:8000/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93
+ * correct: http://localhost:8000/node/taxonomy_object/05caa6d6-fcc1-4c46-b328-c47be58a9dfc
  * error: http://localhost:8000/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b33
  *
  */

@@ -78,7 +78,7 @@ module.exports = (id) =>
           SELECT '${id}' as id
         )
     `
-    app.db.many(sql)
+    app.db.any(sql)
       .then((data) => {
         const nodesAncestors = data.map((n) => ({
           type: 'taxonomy_object',

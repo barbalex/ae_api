@@ -16,7 +16,7 @@ module.exports = (category) =>
       ORDER BY
         name
     `
-    app.db.many(sql)
+    app.db.any(sql)
       .then((data) => {
         const nodesTaxonomies = data.map((n) => ({
           type: 'taxonomy',

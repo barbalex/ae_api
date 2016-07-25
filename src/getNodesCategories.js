@@ -10,7 +10,7 @@ module.exports = () =>
       FROM
         ae.category
     `
-    app.db.many(sql)
+    app.db.any(sql)
       .then((data) => {
         const categories = data.map((c) => ({
           type: 'category',

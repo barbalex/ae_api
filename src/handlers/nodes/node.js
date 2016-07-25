@@ -11,6 +11,7 @@ const getNodesTaxonomies = require('../../getNodesTaxonomies.js')
 const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
+const getTaxonomyObject = require('../../getTaxonomyObject.js')
 
 module.exports = (request, reply) => {
   let {
@@ -70,7 +71,15 @@ module.exports = (request, reply) => {
           `Die übergebene ID des Taxonomie-Objekts muss eine gültige GUID sein`
         ))
       }
-      getCategoryOfTaxonomyObject(id)
+      getTaxonomyObject(id)
+        .catch(() =>
+          reply(Boom.badRequest(
+            `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
+          ))
+        )
+        .then(() =>
+          getCategoryOfTaxonomyObject(id)
+        )
         .then((category) =>
           getNodesTaxonomiesOfCategory(category)
         )
@@ -80,20 +89,19 @@ module.exports = (request, reply) => {
         // get children
         .then((taxonomiesNodes) => {
           nodes = nodes.concat(taxonomiesNodes)
-          return getNodesChildrenOfTaxonomyObject(id)
+          return getNodesAncestorsOfTaxonomyObject(id)
         })
         .catch(() =>
           reply(Boom.badRequest(
             `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
           ))
         )
-        .then((childrenNodes) => {
-          nodes = nodes.concat(childrenNodes)
-          console.log('handlers/node, nodes after adding childrenNodes:', nodes)
-          return getNodesAncestorsOfTaxonomyObject(id)
-        })
         .then((ancestorNodes) => {
           nodes = nodes.concat(ancestorNodes)
+          return getNodesChildrenOfTaxonomyObject(id)
+        })
+        .then((childrenNodes) => {
+          nodes = nodes.concat(childrenNodes)
           reply(null, nodes)
         })
         .catch((error) =>
@@ -101,10 +109,6 @@ module.exports = (request, reply) => {
         )
     }
   }
-
-  // TODO:
-  // if !id && objectId
-  // get taxonomy_object.id from db
 
   getNodesCategories()
     .then((result) => {

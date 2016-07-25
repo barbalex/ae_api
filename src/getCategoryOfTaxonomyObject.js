@@ -15,7 +15,7 @@ module.exports = (id) =>
       WHERE
         ae.taxonomy_object.id = '${id}'
     `
-    app.db.one(sql)
+    app.db.oneOrNone(sql)
       .then((data) => {
         if (data && data.category) return resolve(data.category)
         reject(`no data received from db`)
