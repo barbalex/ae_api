@@ -26,31 +26,32 @@ module.exports = (parentId) =>
           ae.taxonomy_object.parent_id = tree.id
       )
       SELECT
-        'taxonomy_object' as type,
         ae.taxonomy_object.id,
-        ae.taxonomy_object.parent_id,
         ae.taxonomy_object.name,
+        ae.taxonomy_object.taxonomy_id,
+        ae.taxonomy.category,
         tree.ancestors as path
       FROM
         ae.taxonomy_object
           INNER JOIN tree
-          on tree.id = ae.taxonomy_object.id
+          ON tree.id = ae.taxonomy_object.id
+          INNER JOIN ae.taxonomy
+          ON ae.taxonomy.id = ae.taxonomy_object.taxonomy_id
       WHERE
-        ae.taxonomy_object.id IN (
-          SELECT
-            id
-          FROM
-            ae.taxonomy_object
-          WHERE
-            parent_id = '${parentId}'
-        )
+        ae.taxonomy_object.parent_id = '${parentId}'
       ORDER BY
         ae.taxonomy_object.name
     `
     app.db.many(sql)
       .then((data) => {
-        if (data) return resolve(data)
-        reject(`no data received from db`)
+        const nodesChildren = data.map((n) => ({
+          type: 'taxonomy_object',
+          id: n.id,
+          name: n.name,
+          parent_id: parentId,
+          path: [n.category, n.taxonomy_id].concat(n.path)
+        }))
+        resolve(nodesChildren)
       })
       .catch((error) => reject(error))
   })
