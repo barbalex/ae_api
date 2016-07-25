@@ -2,7 +2,7 @@
 
 const app = require('ampersand-app')
 
-module.exports = (taxId) =>
+module.exports = (id) =>
   new Promise((resolve, reject) => {
     const sql = `
     WITH RECURSIVE tree AS (
@@ -62,9 +62,9 @@ module.exports = (taxId) =>
         SELECT
           unnest(ancestors) AS id
         FROM tree
-        WHERE id = '${taxId}'
+        WHERE id = '${id}'
         UNION
-        SELECT '${taxId}' as id
+        SELECT '${id}' as id
       )
     `
     app.db.many(sql)
