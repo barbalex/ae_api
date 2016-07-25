@@ -6,10 +6,9 @@ module.exports = (category) =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        'taxonomy' as type,
         id,
         name,
-        category AS parent_id
+        category
       FROM
         ae.taxonomy
       WHERE
@@ -19,8 +18,14 @@ module.exports = (category) =>
     `
     app.db.many(sql)
       .then((data) => {
-        if (data) return resolve(data)
-        reject(`no data received from db`)
+        const nodesTaxonomies = data.map((n) => ({
+          type: 'taxonomy',
+          id: n.id,
+          name: n.name,
+          parent_id: n.category,
+          path: [n.category, n.id]
+        }))
+        resolve(nodesTaxonomies)
       })
       .catch((error) => reject(error))
   })
