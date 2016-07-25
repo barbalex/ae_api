@@ -2,7 +2,7 @@
 
 /**
  * test with:
- * correct: http://localhost:8000/node?type=taxonomy_object&id=ff56b132-ecdf-4301-8c62-b24b3e258b93
+ * correct: http://localhost:8000/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b93
  * error: http://localhost:8000/node/taxonomy_object/ff56b132-ecdf-4301-8c62-b24b3e258b33
  *
  */
