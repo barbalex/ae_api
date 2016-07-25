@@ -17,7 +17,7 @@ module.exports = (id) =>
     `
     app.db.one(sql)
       .then((data) => {
-        if (data) return resolve(data)
+        if (data && data.category) return resolve(data.category)
         reject(`no data received from db`)
       })
       .catch((error) => reject(error))
