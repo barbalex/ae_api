@@ -79,6 +79,7 @@ module.exports = (objectId) =>
         path = pathWithIds.map((p) => p.name)
         path.unshift(taxonomyName)
         path.unshift(category)
+        path.unshift('root')
         resolve(path)
       })
       .catch((error) => reject(error))
