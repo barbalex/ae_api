@@ -12,119 +12,127 @@ const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.j
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
 const getTaxonomyObject = require('../../getTaxonomyObject.js')
+const getTaxonomyObjectFromPath = required('../../getTaxonomyObjectFromPath.js')
 
 module.exports = (request, reply) => {
-  let {
-    type,
-    id,
-  } = request.params
-  let categoryNodes = []
+  const { path } = request.params
+  let { id } = request.params
   let nodes = []
 
-  const cases = {
-    category() {
-      const categoryIds = categoryNodes.map((c) => c.name)
-      if (!categoryIds.includes(id)) {
-        return reply(Boom.badRequest(
-          `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categoryIds.join("', '")}'`
-        ))
-      }
-      getNodesChildrenOfCategory(id)
-        .then((children) => {
-          nodes = nodes.concat(children)
-          reply(null, nodes)
-        })
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
-        )
-    },
-    taxonomy() {
-      // ensure a guid is passed as id
-      if (!isUuid.v4(id)) {
-        return reply(Boom.badRequest(
-          `Die übergebene ID der Taxonomie muss eine gültige GUID sein`
-        ))
-      }
-      getNodesTaxonomies(id)
-        .catch(() =>
-          reply(Boom.badRequest(
-            `Es existiert keine Taxonomie mit der id '${id}'`
-          ))
-        )
-        // get children
-        .then((taxonomiesNodes) => {
-          nodes = nodes.concat(taxonomiesNodes)
-          return getNodesChildrenOfTaxonomy(id)
-        })
-        .then((childrenNodes) => {
-          nodes = nodes.concat(childrenNodes)
-          reply(null, nodes)
-        })
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
-        )
-    },
-    taxonomy_object() {
-      // ensure a guid is passed as id
-      if (!isUuid.v4(id)) {
-        return reply(Boom.badRequest(
-          `Die übergebene ID des Taxonomie-Objekts muss eine gültige GUID sein`
-        ))
-      }
-      getTaxonomyObject(id)
-        .catch(() =>
-          reply(Boom.badRequest(
-            `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
-          ))
-        )
-        .then(() =>
-          getCategoryOfTaxonomyObject(id)
-        )
-        .then((category) =>
-          getNodesTaxonomiesOfCategory(category)
-        )
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
-        )
-        // get children
-        .then((taxonomiesNodes) => {
-          nodes = nodes.concat(taxonomiesNodes)
-          return getNodesAncestorsOfTaxonomyObject(id)
-        })
-        .catch(() =>
-          reply(Boom.badRequest(
-            `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
-          ))
-        )
-        .then((ancestorNodes) => {
-          nodes = nodes.concat(ancestorNodes)
-          return getNodesChildrenOfTaxonomyObject(id)
-        })
-        .then((childrenNodes) => {
-          nodes = nodes.concat(childrenNodes)
-          reply(null, nodes)
-        })
-        .catch((error) =>
-          reply(Boom.badImplementation(error), null)
-        )
+  const replyWithCategoryNodes = () => {
+    const categoryIds = nodes.map((c) => c.name)
+    if (!categoryIds.includes(id)) {
+      return reply(Boom.badRequest(
+        `Es existiert keine Gruppe '${id}'. Verfügbare Gruppen sind: '${categoryIds.join("', '")}'`
+      ))
     }
+    getNodesChildrenOfCategory(id)
+      .then((children) => {
+        nodes = nodes.concat(children)
+        reply(null, nodes)
+      })
+      .catch((error) =>
+        reply(Boom.badImplementation(error), null)
+      )
   }
 
+  const replyWithTaxonomyNodes = () => {
+    getNodesTaxonomies(id)
+      .catch(() =>
+        reply(Boom.badRequest(
+          `Es existiert keine Taxonomie mit der id '${id}'`
+        ))
+      )
+      // get children
+      .then((taxonomiesNodes) => {
+        nodes = nodes.concat(taxonomiesNodes)
+        return getNodesChildrenOfTaxonomy(id)
+      })
+      .then((childrenNodes) => {
+        nodes = nodes.concat(childrenNodes)
+        reply(null, nodes)
+      })
+      .catch((error) =>
+        reply(Boom.badImplementation(error), null)
+      )
+  }
+
+  const replyWithTaxonomyObjectNodes = () => {
+    getTaxonomyObjectIdFromObjectId(id)
+      .catch(() =>
+        reply(Boom.badRequest(
+          `Es existiert kein Objekt mit der id '${id}'`
+        ))
+      )
+      .then((taxObjectId) => {
+        id = taxObjectId
+        return getTaxonomyObject(id)
+      })
+      .then(() =>
+        getCategoryOfTaxonomyObject(id)
+      )
+      .then((category) =>
+        getNodesTaxonomiesOfCategory(category)
+      )
+      .catch((error) =>
+        reply(Boom.badImplementation(error), null)
+      )
+      // get children
+      .then((taxonomiesNodes) => {
+        nodes = nodes.concat(taxonomiesNodes)
+        return getNodesAncestorsOfTaxonomyObject(id)
+      })
+      .catch(() =>
+        reply(Boom.badRequest(
+          `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
+        ))
+      )
+      .then((ancestorNodes) => {
+        nodes = nodes.concat(ancestorNodes)
+        return getNodesChildrenOfTaxonomyObject(id)
+      })
+      .then((childrenNodes) => {
+        nodes = nodes.concat(childrenNodes)
+        reply(null, nodes)
+      })
+      .catch((error) =>
+        reply(Boom.badImplementation(error), null)
+      )
+  }
+
+  const replyWithTaxonomyObjectNodesWithoutId = () => {
+    // need to find taxonomy object by its path
+    getTaxonomyObjectFromPath(path)
+      .then(())
+  }
+
+  // we always need category nodes, so get them first
   getNodesCategories()
-    .then((result) => {
-      categoryNodes = result
+    .then((categoryNodes) => {
       nodes = nodes.concat(categoryNodes)
-      if (type === 'object') {
-        return getTaxonomyObjectIdFromObjectId(id)
+
+      // analyse path
+      if (path.length === 1 && isUuid.v4(path[0])) {
+        // this is a path of style /<objectId>
+        id = path[0]
+        replyWithTaxonomyObjectNodes()
+      } else if (path.length === 1 && path[0] === 'index.html' && id) {
+        // this is a path of style /index.html?id=<objectId>
+        // it was used in a previous app version
+        // and is still called by ALT and EvAB
+        replyWithTaxonomyObjectNodes()
+      } else if (path.length === 1) {
+        id = path[0]
+        replyWithCategoryNodes()
+      } else if (path.length === 2) {
+        replyWithTaxonomyNodes()
+      } else if (id) {
+        // this is a regular object node
+        replyWithTaxonomyObjectNodes()
+      } else {
+        // this is a taxonomy_node without object
+        // TODO
       }
-      return false
-    })
-    .then((result) => {
-      if (type === 'object') {
-        type = 'taxonomy_object'
-        id = result.id
-      }
-      cases[type]()
     })
     .catch((error) =>
       reply(Boom.badImplementation(error), null)

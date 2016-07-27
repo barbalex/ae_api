@@ -85,7 +85,7 @@ module.exports = (id) =>
           id: n.id,
           name: n.name,
           parent_id: n.parent_id,
-          path: [n.category, n.taxonomy_id].concat(n.path)
+          path: [n.category, n.taxonomy_id].concat(n.path).push(id)
         }))
         resolve(nodesAncestors)
       })

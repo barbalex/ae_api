@@ -7,7 +7,7 @@ const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxono
 const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
 const getTaxonomyId = require('../../getTaxonomyId.js')
-const getTaxonomyObjectId = require('../../getTaxonomyObjectId.js')
+const getTaxonomyObjectFromId = require('../../getTaxonomyObjectFromId.js')
 
 module.exports = (request, reply) => {
   const {
@@ -66,7 +66,7 @@ module.exports = (request, reply) => {
           `Die übergebene ID des Taxonomie-Objekts muss eine gültige GUID sein`
         ))
       }
-      getTaxonomyObjectId(id)
+      getTaxonomyObjectFromId(id)
         .catch(() =>
           reply(Boom.badRequest(
             `Es existiert kein Taxonomie-Objekt mit der id '${id}'`

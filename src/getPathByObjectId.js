@@ -4,11 +4,13 @@
  */
 
 const app = require('ampersand-app')
+const getTaxonomyObjectFromObjectId = require('./getTaxonomyObjectFromObjectId.js')
 
 module.exports = ({ taxonomyId, objectId }) =>
   new Promise((resolve, reject) => {
     let path
     let pathWithIds
+    let taxObject
     const sql = `
     SELECT
       id,
@@ -53,6 +55,10 @@ module.exports = ({ taxonomyId, objectId }) =>
       .then((data) => {
         pathWithIds = data
         path = pathWithIds.map((p) => p.name)
+        return getTaxonomyObjectFromObjectId(objectId)
+      })
+      .then((taxObjectPassed) => {
+        taxObject = taxObjectPassed
         // get Taxonomy
         return app.db.one(`
           SELECT
@@ -69,6 +75,8 @@ module.exports = ({ taxonomyId, objectId }) =>
       .then((result) => {
         path.unshift(result.name)
         path.unshift(result.category)
+        path.push(objectId)
+        path.push(taxObject.name)
         // path.unshift('root')
         resolve(path)
       })

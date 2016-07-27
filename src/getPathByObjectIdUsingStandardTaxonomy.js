@@ -4,6 +4,7 @@
  */
 
 const app = require('ampersand-app')
+const getTaxonomyObjectFromObjectId = require('./getTaxonomyObjectFromObjectId.js')
 
 module.exports = (objectId) =>
   new Promise((resolve, reject) => {
@@ -77,8 +78,12 @@ module.exports = (objectId) =>
       .then((data) => {
         pathWithIds = data
         path = pathWithIds.map((p) => p.name)
+        return getTaxonomyObjectFromObjectId(objectId)
+      })
+      .then((taxObject) => {
         path.unshift(taxonomyName)
         path.unshift(category)
+        path.push(taxObject.name)
         // path.unshift('root')
         resolve(path)
       })

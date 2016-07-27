@@ -5,16 +5,17 @@ const node = require('../../handlers/nodes/node.js')
 
 module.exports = {
   method: `GET`,
-  path: `/node/{type}/{id}`,
+  path: `/node/{path}/{id?}`,
   handler: node,
   config: {
     validate: {
       params: {
-        type: Joi
+        path: Joi
           .string()
-          .valid(['category', 'taxonomy', 'taxonomy_object', 'object'])
           .required(),
-        id: Joi.string().required(),
+        id: Joi
+          .string()
+          .guid(),
       }
     },
     auth: false
