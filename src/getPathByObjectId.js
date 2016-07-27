@@ -69,7 +69,7 @@ module.exports = ({ taxonomyId, objectId }) =>
       .then((result) => {
         path.unshift(result.name)
         path.unshift(result.category)
-        path.unshift('root')
+        // path.unshift('root')
         resolve(path)
       })
       .catch((error) => reject(error))
