@@ -18,6 +18,13 @@ const server = require('../../server.js')
 
 // 4. test
 describe('/node/{path}/{id?}', () => {
+  it(`should return more than 1 row for path []`, (done) => {
+    const url = '/node/[]'
+    server.inject({ method, url }, (res) => {
+      expect(res.result.length).to.be.above(1)
+      done()
+    })
+  })
   it(`should return more than 2 rows for path ["Fauna"]`, (done) => {
     const url = '/node/["Fauna"]'
     server.inject({ method, url }, (res) => {

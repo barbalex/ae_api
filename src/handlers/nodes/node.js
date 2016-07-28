@@ -22,6 +22,10 @@ module.exports = (request, reply) => {
   let nodes = []
 
   const replyWithCategoryNodes = () => {
+    reply(null, nodes)
+  }
+
+  const replyWithCategoryNode = () => {
     const categoryIds = nodes.map((c) => c.name)
     if (!categoryIds.includes(id)) {
       return reply(Boom.badRequest(
@@ -38,7 +42,7 @@ module.exports = (request, reply) => {
       )
   }
 
-  const replyWithTaxonomyNodes = () => {
+  const replyWithTaxonomyNode = () => {
     getNodesTaxonomiesByName(path[0], path[1])
       .catch(() =>
         reply(Boom.badRequest(
@@ -59,7 +63,7 @@ module.exports = (request, reply) => {
       )
   }
 
-  const replyWithTaxonomyObjectNodesUsingObjectId = () => {
+  const replyWithTaxonomyObjectNodeUsingObjectId = () => {
     getTaxonomyObjectIdFromObjectId(id)
       .catch(() =>
         reply(Boom.badRequest(
@@ -109,7 +113,7 @@ module.exports = (request, reply) => {
       )
   }
 
-  const replyWithTaxonomyObjectNodesWithoutId = () => {
+  const replyWithTaxonomyObjectNodeWithoutId = () => {
     // need to find taxonomy object by its path
     getTaxonomyObjectFromPath(path)
       .then((taxObject) => {
@@ -127,28 +131,36 @@ module.exports = (request, reply) => {
   getNodesCategories()
     .then((categoryNodes) => {
       nodes = nodes.concat(categoryNodes)
-      // console.log('handlers/node, nodes after adding categoryNodes:', nodes)
       // analyse path
-      if (path.length === 1 && isUuid.v4(path[0])) {
-        // this is a path of style /<objectId>
-        id = path[0]
-        replyWithTaxonomyObjectNodesUsingObjectId()
-      } else if (path.length === 1 && path[0] === 'index.html' && id) {
-        // this is a path of style /index.html?id=<objectId>
-        // it was used in a previous app version
-        // and is still called by ALT and EvAB
-        replyWithTaxonomyObjectNodesUsingObjectId()
-      } else if (path.length === 1) {
-        id = path[0]
+      if (
+        path.length === 0 ||  // home
+        ['importieren', 'exportieren', 'organisationen'].includes(path[0])
+      ) {
+        // this is not an object page
+        // return only category nodes
         replyWithCategoryNodes()
-      } else if (path.length === 2) {
-        replyWithTaxonomyNodes()
-      } else if (id) {
-        // this is a regular object node
-        replyWithTaxonomyObjectNodesUsingObjectId()
       } else {
-        // this is a taxonomy_node without object
-        replyWithTaxonomyObjectNodesWithoutId()
+        if (path.length === 1 && isUuid.v4(path[0])) {
+          // this is a path of style /<objectId>
+          id = path[0]
+          replyWithTaxonomyObjectNodeUsingObjectId()
+        } else if (path.length === 1 && path[0] === 'index.html' && id) {
+          // this is a path of style /index.html?id=<objectId>
+          // it was used in a previous app version
+          // and is still called by ALT and EvAB
+          replyWithTaxonomyObjectNodeUsingObjectId()
+        } else if (path.length === 1) {
+          id = path[0]
+          replyWithCategoryNode()
+        } else if (path.length === 2) {
+          replyWithTaxonomyNode()
+        } else if (id) {
+          // this is a regular object node
+          replyWithTaxonomyObjectNodeUsingObjectId()
+        } else {
+          // this is a taxonomy_node without object
+          replyWithTaxonomyObjectNodeWithoutId()
+        }
       }
     })
     .catch((error) =>
