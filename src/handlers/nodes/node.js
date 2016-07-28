@@ -1,18 +1,20 @@
 'use strict'
 
+/* eslint no-console:0 */
+
 const Boom = require('boom')
 const isUuid = require('is-uuid')
 const getNodesCategories = require('../../getNodesCategories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
-const getNodesChildrenOfTaxonomy = require('../../getNodesChildrenOfTaxonomy.js')
+const getNodesChildrenOfTaxonomyByCategoryName = require('../../getNodesChildrenOfTaxonomyByCategoryName.js')
 const getNodesChildrenOfCategory = require('../../getNodesChildrenOfCategory.js')
 const getNodesAncestorsOfTaxonomyObject = require('../../getNodesAncestorsOfTaxonomyObject.js')
-const getNodesTaxonomies = require('../../getNodesTaxonomies.js')
+const getNodesTaxonomiesByName = require('../../getNodesTaxonomiesByName.js')
 const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
 const getTaxonomyObject = require('../../getTaxonomyObject.js')
-const getTaxonomyObjectFromPath = required('../../getTaxonomyObjectFromPath.js')
+const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 
 module.exports = (request, reply) => {
   const { path } = request.params
@@ -37,16 +39,16 @@ module.exports = (request, reply) => {
   }
 
   const replyWithTaxonomyNodes = () => {
-    getNodesTaxonomies(id)
+    getNodesTaxonomiesByName(path[0], path[1])
       .catch(() =>
         reply(Boom.badRequest(
-          `Es existiert keine Taxonomie mit der id '${id}'`
+          `Es existiert keine Taxonomie mit mit Gruppe '${path[0]}' und Namen '${path[1]}'`
         ))
       )
       // get children
       .then((taxonomiesNodes) => {
         nodes = nodes.concat(taxonomiesNodes)
-        return getNodesChildrenOfTaxonomy(id)
+        return getNodesChildrenOfTaxonomyByCategoryName(path[0], path[1])
       })
       .then((childrenNodes) => {
         nodes = nodes.concat(childrenNodes)
@@ -57,7 +59,7 @@ module.exports = (request, reply) => {
       )
   }
 
-  const replyWithTaxonomyObjectNodes = () => {
+  const replyWithTaxonomyObjectNodesUsingObjectId = () => {
     getTaxonomyObjectIdFromObjectId(id)
       .catch(() =>
         reply(Boom.badRequest(
@@ -66,8 +68,15 @@ module.exports = (request, reply) => {
       )
       .then((taxObjectId) => {
         id = taxObjectId
-        return getTaxonomyObject(id)
+        replyWithTaxonomyObjectNodes()
       })
+      .catch((error) =>
+        reply(Boom.badImplementation(error), null)
+      )
+  }
+
+  const replyWithTaxonomyObjectNodes = () => {
+    getTaxonomyObject(id)
       .then(() =>
         getCategoryOfTaxonomyObject(id)
       )
@@ -103,24 +112,32 @@ module.exports = (request, reply) => {
   const replyWithTaxonomyObjectNodesWithoutId = () => {
     // need to find taxonomy object by its path
     getTaxonomyObjectFromPath(path)
-      .then(())
+      .then((taxObject) => {
+        id = taxObject.id
+        replyWithTaxonomyObjectNodes()
+      })
+      .catch(() =>
+        reply(Boom.badRequest(
+          `Es existiert kein Taxonomie-Objekt mit der übergebenen Hierarchie`
+        ))
+      )
   }
 
   // we always need category nodes, so get them first
   getNodesCategories()
     .then((categoryNodes) => {
       nodes = nodes.concat(categoryNodes)
-
+      // console.log('handlers/node, nodes after adding categoryNodes:', nodes)
       // analyse path
       if (path.length === 1 && isUuid.v4(path[0])) {
         // this is a path of style /<objectId>
         id = path[0]
-        replyWithTaxonomyObjectNodes()
+        replyWithTaxonomyObjectNodesUsingObjectId()
       } else if (path.length === 1 && path[0] === 'index.html' && id) {
         // this is a path of style /index.html?id=<objectId>
         // it was used in a previous app version
         // and is still called by ALT and EvAB
-        replyWithTaxonomyObjectNodes()
+        replyWithTaxonomyObjectNodesUsingObjectId()
       } else if (path.length === 1) {
         id = path[0]
         replyWithCategoryNodes()
@@ -128,10 +145,10 @@ module.exports = (request, reply) => {
         replyWithTaxonomyNodes()
       } else if (id) {
         // this is a regular object node
-        replyWithTaxonomyObjectNodes()
+        replyWithTaxonomyObjectNodesUsingObjectId()
       } else {
         // this is a taxonomy_node without object
-        // TODO
+        replyWithTaxonomyObjectNodesWithoutId()
       }
     })
     .catch((error) =>

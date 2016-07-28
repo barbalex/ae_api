@@ -1,14 +1,19 @@
 'use strict'
 
 const app = require('ampersand-app')
+const _ = require('lodash')
 
 module.exports = (path) =>
   new Promise((resolve, reject) => {
+    // remove category and taxonomy from path
+    const arrayPath = _.clone(path)
+    const category = arrayPath.shift()
+    const taxonomyName = arrayPath.shift()
     const sql = `
       WITH RECURSIVE tree AS (
         SELECT
-          id,
-          ARRAY[]::text[] AS ancestors
+          *,
+          ARRAY[ae.taxonomy_object.name]::text[] AS path
         FROM
           ae.taxonomy_object
         WHERE
@@ -17,8 +22,8 @@ module.exports = (path) =>
         UNION ALL
 
         SELECT
-          ae.taxonomy_object.id,
-          tree.ancestors || ae.taxonomy_object.name
+          ae.taxonomy_object.*,
+          tree.path || ae.taxonomy_object.name
         FROM
           ae.taxonomy_object,
           tree
@@ -26,15 +31,21 @@ module.exports = (path) =>
           ae.taxonomy_object.parent_id = tree.id
       )
       SELECT
-        id
+        tree.*
       FROM
         tree
-      WHERE ancestors = ARRAY['${path.join("','")}']
+        INNER JOIN ae.taxonomy
+        ON ae.taxonomy.id = tree.taxonomy_id
+      WHERE
+        tree.path = ARRAY['${arrayPath.join("','")}'] AND
+        ae.taxonomy.category = '${category}' AND
+        ae.taxonomy.name = '${taxonomyName}'
     `
     app.db.one(sql)
-      .then((data) => {
-        if (data) return resolve(data.id)
-        reject(`no data received from db`)
-      })
-      .catch((error) => reject(error))
+      .then((data) =>
+        resolve(data)
+      )
+      .catch((error) =>
+        reject(error)
+      )
   })

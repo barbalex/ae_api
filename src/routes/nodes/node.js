@@ -11,7 +11,10 @@ module.exports = {
     validate: {
       params: {
         path: Joi
-          .string()
+          .array()
+          .min(0)
+          .max(10)
+          .items(Joi.string())
           .required(),
         id: Joi
           .string()
