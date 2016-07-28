@@ -16,7 +16,7 @@ const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromOb
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
 const buildObject = require('../../buildObject.js')
-const getUrlPathByObjectId = require('../../getUrlPathByObjectId.js')
+const getUrlPathByTaxonomyObjectId = require('../../getUrlPathByTaxonomyObjectId.js')
 
 module.exports = (request, reply) => {
   const { path } = request.params
@@ -31,12 +31,8 @@ module.exports = (request, reply) => {
     buildObject(object)
       .then((data) => {
         objectBuilt = data
-        console.log('handlers/node, id:', id)
-        console.log('handlers/node, objectId:', objectId)
-        console.log('handlers/node, path:', path)
-        console.log('handlers/node, rebuildPath:', rebuildPath)
         if (rebuildPath) {
-          return getUrlPathByObjectId({ objectId, taxonomyId: id })
+          return getUrlPathByTaxonomyObjectId(id)
         }
         return path
       })
@@ -157,36 +153,33 @@ module.exports = (request, reply) => {
       nodes = nodes.concat(categoryNodes)
       // analyse path
       if (
-        path.length === 0 ||  // home
+        (path.length === 0 && !id) ||  // home
         ['importieren', 'exportieren', 'organisationen'].includes(path[0])
       ) {
         // this is not an object page
         // return only category nodes
         respond()
+      } else if (path.length === 0 && id) {
+        // this is a path of style /<objectId>
+        replyWithTaxonomyObjectNodeUsingObjectId()
+        rebuildPath = true
+      } else if (path.length === 1 && path[0] === 'index.html' && id) {
+        // this is a path of style /index.html?id=<objectId>
+        // it was used in a previous app version
+        // and is still called by ALT and EvAB
+        replyWithTaxonomyObjectNodeUsingObjectId()
+        rebuildPath = true
+      } else if (path.length === 1) {
+        id = path[0]
+        replyWithCategoryNode()
+      } else if (path.length === 2) {
+        replyWithTaxonomyNode()
+      } else if (id) {
+        // this is a regular object node
+        replyWithTaxonomyObjectNodeUsingObjectId()
       } else {
-        if (path.length === 1 && isUuid.v4(path[0])) {
-          // this is a path of style /<objectId>
-          id = path[0]
-          replyWithTaxonomyObjectNodeUsingObjectId()
-          rebuildPath = true
-        } else if (path.length === 1 && path[0] === 'index.html' && id) {
-          // this is a path of style /index.html?id=<objectId>
-          // it was used in a previous app version
-          // and is still called by ALT and EvAB
-          replyWithTaxonomyObjectNodeUsingObjectId()
-          rebuildPath = true
-        } else if (path.length === 1) {
-          id = path[0]
-          replyWithCategoryNode()
-        } else if (path.length === 2) {
-          replyWithTaxonomyNode()
-        } else if (id) {
-          // this is a regular object node
-          replyWithTaxonomyObjectNodeUsingObjectId()
-        } else {
-          // this is a taxonomy_node without object
-          replyWithTaxonomyObjectNodeWithoutId()
-        }
+        // this is a taxonomy_node without object
+        replyWithTaxonomyObjectNodeWithoutId()
       }
     })
     .catch((error) =>

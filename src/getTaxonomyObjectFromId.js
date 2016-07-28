@@ -6,7 +6,7 @@ module.exports = (id) =>
   new Promise((resolve, reject) => {
     const sql = `
       SELECT
-        id
+        *
       FROM
         ae.taxonomy_object
       WHERE

@@ -175,6 +175,16 @@ describe('/node/{path}/{id?}', () => {
     }
   )
   it(
+    `should return an urlPath with with length > 3 for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]`,
+    (done) => {
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.urlPath.length).to.be.above(3)
+        done()
+      })
+    }
+  )
+  it(
     `should return more than 4 rows for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
@@ -190,6 +200,16 @@ describe('/node/{path}/{id?}', () => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
       server.inject({ method, url }, (res) => {
         expect(res.result.object.id).to.equal('9c84d038-5bc4-4327-8389-fe6423e14600')
+        done()
+      })
+    }
+  )
+  it(
+    `should return an urlPath > 3 for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.urlPath.length).to.be.above(3)
         done()
       })
     }
@@ -250,4 +270,64 @@ describe('/node/{path}/{id?}', () => {
       done()
     })
   })
+  it(
+    `should return more than 4 rows for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.nodes.length).to.be.above(3)
+        done()
+      })
+    }
+  )
+  it(
+    `should return an object with id '9c84d038-5bc4-4327-8389-fe6423e14600' for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.object.id).to.equal('9c84d038-5bc4-4327-8389-fe6423e14600')
+        done()
+      })
+    }
+  )
+  it(
+    `should return an urlPath > 3 for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.urlPath.length).to.be.above(3)
+        done()
+      })
+    }
+  )
+  it(
+    `should return more than 4 rows for path ["index.html"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["index.html"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.nodes.length).to.be.above(3)
+        done()
+      })
+    }
+  )
+  it(
+    `should return an object with id '9c84d038-5bc4-4327-8389-fe6423e14600' for path ["index.html"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["index.html"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.object.id).to.equal('9c84d038-5bc4-4327-8389-fe6423e14600')
+        done()
+      })
+    }
+  )
+  it(
+    `should return an urlPath > 3 for path ["index.html"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["index.html"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.urlPath.length).to.be.above(3)
+        done()
+      })
+    }
+  )
 })

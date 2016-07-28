@@ -6,7 +6,7 @@
 const app = require('ampersand-app')
 const getTaxonomyObjectFromId = require('./getTaxonomyObjectFromId.js')
 
-module.exports = (taxonomyId) =>
+module.exports = (id) =>
   new Promise((resolve) => {
     let path
     let pathWithIds
@@ -27,8 +27,7 @@ module.exports = (taxonomyId) =>
           FROM
             ae.taxonomy_object
           WHERE
-            parent_id IS NULL AND
-            taxonomy_id = $1
+            parent_id IS NULL
 
           UNION ALL
 
@@ -40,8 +39,7 @@ module.exports = (taxonomyId) =>
             ae.taxonomy_object,
             tree
           WHERE
-            ae.taxonomy_object.parent_id = tree.id AND
-            ae.taxonomy_object.taxonomy_id = $1
+            ae.taxonomy_object.parent_id = tree.id
         )
         SELECT
           unnest(path)
@@ -51,31 +49,30 @@ module.exports = (taxonomyId) =>
           id = $1
       )
     `
-    app.db.many(sql, taxonomyId)
+    app.db.many(sql, id)
       .then((data) => {
         pathWithIds = data
-        console.log('getUrlPathByTaxonomyId.js, pathWithIds:', pathWithIds)
         path = pathWithIds.map((p) => p.name)
-        return getTaxonomyObjectFromId(taxonomyId)
+        return getTaxonomyObjectFromId(id)
       })
       .then((taxObjectPassed) => {
         taxObject = taxObjectPassed
-        console.log('getUrlPathByTaxonomyId.js, taxObject:', taxObject)
         // get Taxonomy
         return app.db.one(`
           SELECT
-            name,
-            category
+            ae.taxonomy.name,
+            ae.taxonomy.category
           FROM
             ae.taxonomy
+            INNER JOIN ae.taxonomy_object
+            ON ae.taxonomy.id = ae.taxonomy_object.taxonomy_id
           WHERE
-            id = $1
+            ae.taxonomy_object.id = $1
           `,
-          taxonomyId
+          id
         )
       })
       .then((result) => {
-        console.log('getUrlPathByTaxonomyId.js, result.name:', result.name)
         path.unshift(result.name)
         path.unshift(result.category)
         path.push(taxObject.name)
