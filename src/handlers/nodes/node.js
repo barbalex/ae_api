@@ -16,17 +16,32 @@ const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromOb
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
 const buildObject = require('../../buildObject.js')
+const getUrlPathByObjectId = require('../../getUrlPathByObjectId.js')
 
 module.exports = (request, reply) => {
   const { path } = request.params
   let { id } = request.params
+  const objectId = id
   let nodes = []
   let object = null
+  let objectBuilt
+  let rebuildPath = false
 
   const respond = () => {
     buildObject(object)
-      .then((objectBuilt) =>
-        reply(null, { nodes, object: objectBuilt })
+      .then((data) => {
+        objectBuilt = data
+        console.log('handlers/node, id:', id)
+        console.log('handlers/node, objectId:', objectId)
+        console.log('handlers/node, path:', path)
+        console.log('handlers/node, rebuildPath:', rebuildPath)
+        if (rebuildPath) {
+          return getUrlPathByObjectId({ objectId, taxonomyId: id })
+        }
+        return path
+      })
+      .then((urlPath) =>
+        reply(null, { nodes, object: objectBuilt, urlPath })
       )
       .catch((error) =>
         reply(Boom.badImplementation(error), null)
@@ -153,11 +168,13 @@ module.exports = (request, reply) => {
           // this is a path of style /<objectId>
           id = path[0]
           replyWithTaxonomyObjectNodeUsingObjectId()
+          rebuildPath = true
         } else if (path.length === 1 && path[0] === 'index.html' && id) {
           // this is a path of style /index.html?id=<objectId>
           // it was used in a previous app version
           // and is still called by ALT and EvAB
           replyWithTaxonomyObjectNodeUsingObjectId()
+          rebuildPath = true
         } else if (path.length === 1) {
           id = path[0]
           replyWithCategoryNode()

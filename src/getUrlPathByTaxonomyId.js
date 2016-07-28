@@ -4,10 +4,10 @@
  */
 
 const app = require('ampersand-app')
-const getTaxonomyObjectFromObjectId = require('./getTaxonomyObjectFromObjectId.js')
+const getTaxonomyObjectFromId = require('./getTaxonomyObjectFromId.js')
 
-module.exports = ({ taxonomyId, objectId }) =>
-  new Promise((resolve, reject) => {
+module.exports = (taxonomyId) =>
+  new Promise((resolve) => {
     let path
     let pathWithIds
     let taxObject
@@ -48,17 +48,19 @@ module.exports = ({ taxonomyId, objectId }) =>
         FROM
           tree
         WHERE
-          object_id = $2
+          id = $1
       )
     `
-    app.db.many(sql, [taxonomyId, objectId])
+    app.db.many(sql, taxonomyId)
       .then((data) => {
         pathWithIds = data
+        console.log('getUrlPathByTaxonomyId.js, pathWithIds:', pathWithIds)
         path = pathWithIds.map((p) => p.name)
-        return getTaxonomyObjectFromObjectId(objectId)
+        return getTaxonomyObjectFromId(taxonomyId)
       })
       .then((taxObjectPassed) => {
         taxObject = taxObjectPassed
+        console.log('getUrlPathByTaxonomyId.js, taxObject:', taxObject)
         // get Taxonomy
         return app.db.one(`
           SELECT
@@ -73,12 +75,11 @@ module.exports = ({ taxonomyId, objectId }) =>
         )
       })
       .then((result) => {
+        console.log('getUrlPathByTaxonomyId.js, result.name:', result.name)
         path.unshift(result.name)
         path.unshift(result.category)
-        path.push(objectId)
         path.push(taxObject.name)
-        // path.unshift('root')
         resolve(path)
       })
-      .catch((error) => reject(error))
+      .catch(() => resolve(null))
   })
