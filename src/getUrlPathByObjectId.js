@@ -8,8 +8,6 @@ const getTaxonomyObjectFromObjectId = require('./getTaxonomyObjectFromObjectId.j
 
 module.exports = ({ taxonomyId, objectId }) =>
   new Promise((resolve, reject) => {
-    console.log('getUrlPathByObjectId, taxonomyId:', taxonomyId)
-    console.log('getUrlPathByObjectId, objectId:', objectId)
     let path
     let pathWithIds
     let taxObject
