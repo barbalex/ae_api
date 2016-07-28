@@ -21,21 +21,21 @@ describe('/node/{path}/{id?}', () => {
   it(`should return more than 1 row for path []`, (done) => {
     const url = '/node/[]'
     server.inject({ method, url }, (res) => {
-      expect(res.result.length).to.be.above(1)
+      expect(res.result.nodes.length).to.be.above(1)
       done()
     })
   })
   it(`should return more than 2 rows for path ["Fauna"]`, (done) => {
     const url = '/node/["Fauna"]'
     server.inject({ method, url }, (res) => {
-      expect(res.result.length).to.be.above(2)
+      expect(res.result.nodes.length).to.be.above(2)
       done()
     })
   })
   it(`should return a root for path ["Fauna"]`, (done) => {
     const url = '/node/["Fauna"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.id === 'root')
+      const node = res.result.nodes.find((n) => n.id === 'root')
       expect(node).to.exist()
       done()
     })
@@ -43,7 +43,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a category for path ["Fauna"]`, (done) => {
     const url = '/node/["Fauna"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'category')
+      const node = res.result.nodes.find((n) => n.type === 'category')
       expect(node).to.exist()
       done()
     })
@@ -51,7 +51,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a Taxonomy for path ["Fauna"]`, (done) => {
     const url = '/node/["Fauna"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'taxonomy')
+      const node = res.result.nodes.find((n) => n.type === 'taxonomy')
       expect(node).to.exist()
       done()
     })
@@ -66,14 +66,14 @@ describe('/node/{path}/{id?}', () => {
   it(`should return more than 3 rows for path '["Fauna","CSCF (2009)"]'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)"]'
     server.inject({ method, url }, (res) => {
-      expect(res.result.length).to.be.above(2)
+      expect(res.result.nodes.length).to.be.above(2)
       done()
     })
   })
   it(`should return a root for path '["Fauna","CSCF (2009)"]'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.id === 'root')
+      const node = res.result.nodes.find((n) => n.id === 'root')
       expect(node).to.exist()
       done()
     })
@@ -81,7 +81,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a category for path '["Fauna","CSCF (2009)"]'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'category')
+      const node = res.result.nodes.find((n) => n.type === 'category')
       expect(node).to.exist()
       done()
     })
@@ -89,7 +89,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a taxonomy for path '["Fauna","CSCF (2009)"]'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'taxonomy')
+      const node = res.result.nodes.find((n) => n.type === 'taxonomy')
       expect(node).to.exist()
       done()
     })
@@ -97,7 +97,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a taxonomy_object for path '["Fauna","CSCF (2009)"]'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)"]'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'taxonomy_object')
+      const node = res.result.nodes.find((n) => n.type === 'taxonomy_object')
       expect(node).to.exist()
       done()
     })
@@ -121,7 +121,7 @@ describe('/node/{path}/{id?}', () => {
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves"]'
       server.inject({ method, url }, (res) => {
-        expect(res.result.length).to.be.above(3)
+        expect(res.result.nodes.length).to.be.above(3)
         done()
       })
     }
@@ -131,7 +131,7 @@ describe('/node/{path}/{id?}', () => {
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes"]'
       server.inject({ method, url }, (res) => {
-        expect(res.result.length).to.be.above(3)
+        expect(res.result.nodes.length).to.be.above(3)
         done()
       })
     }
@@ -141,7 +141,7 @@ describe('/node/{path}/{id?}', () => {
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae"]'
       server.inject({ method, url }, (res) => {
-        expect(res.result.length).to.be.above(3)
+        expect(res.result.nodes.length).to.be.above(3)
         done()
       })
     }
@@ -151,7 +151,7 @@ describe('/node/{path}/{id?}', () => {
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]'
       server.inject({ method, url }, (res) => {
-        expect(res.result.length).to.be.above(3)
+        expect(res.result.nodes.length).to.be.above(3)
         done()
       })
     }
@@ -161,7 +161,7 @@ describe('/node/{path}/{id?}', () => {
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
       server.inject({ method, url }, (res) => {
-        expect(res.result.length).to.be.above(3)
+        expect(res.result.nodes.length).to.be.above(3)
         done()
       })
     }
@@ -169,7 +169,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a root for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.id === 'root')
+      const node = res.result.nodes.find((n) => n.id === 'root')
       expect(node).to.exist()
       done()
     })
@@ -177,7 +177,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a category for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'category')
+      const node = res.result.nodes.find((n) => n.type === 'category')
       expect(node).to.exist()
       done()
     })
@@ -185,7 +185,7 @@ describe('/node/{path}/{id?}', () => {
   it(`should return a taxonomy for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
     server.inject({ method, url }, (res) => {
-      const node = res.result.find((n) => n.type === 'taxonomy')
+      const node = res.result.nodes.find((n) => n.type === 'taxonomy')
       expect(node).to.exist()
       done()
     })
@@ -195,7 +195,7 @@ describe('/node/{path}/{id?}', () => {
     (done) => {
       const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
       server.inject({ method, url }, (res) => {
-        const node = res.result.find((n) => n.type === 'taxonomy_object')
+        const node = res.result.nodes.find((n) => n.type === 'taxonomy_object')
         expect(node).to.exist()
         done()
       })

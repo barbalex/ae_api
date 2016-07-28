@@ -15,15 +15,15 @@ const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
 const getTaxonomyObject = require('../../getTaxonomyObject.js')
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
+const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
 
 module.exports = (request, reply) => {
   const { path } = request.params
   let { id } = request.params
   let nodes = []
+  let object = null
 
-  const replyWithCategoryNodes = () => {
-    reply(null, nodes)
-  }
+  const respond = () => reply(null, { nodes, object })
 
   const replyWithCategoryNode = () => {
     const categoryIds = nodes.map((c) => c.name)
@@ -35,7 +35,7 @@ module.exports = (request, reply) => {
     getNodesChildrenOfCategory(id)
       .then((children) => {
         nodes = nodes.concat(children)
-        reply(null, nodes)
+        respond()
       })
       .catch((error) =>
         reply(Boom.badImplementation(error), null)
@@ -56,7 +56,7 @@ module.exports = (request, reply) => {
       })
       .then((childrenNodes) => {
         nodes = nodes.concat(childrenNodes)
-        reply(null, nodes)
+        respond()
       })
       .catch((error) =>
         reply(Boom.badImplementation(error), null)
@@ -80,10 +80,11 @@ module.exports = (request, reply) => {
   }
 
   const replyWithTaxonomyObjectNodes = () => {
-    getTaxonomyObject(id)
-      .then(() =>
-        getCategoryOfTaxonomyObject(id)
-      )
+    getObjectOfTaxonomyObject(id)
+      .then((data) => {
+        object = data
+        return getCategoryOfTaxonomyObject(id)
+      })
       .then((category) =>
         getNodesTaxonomiesOfCategory(category)
       )
@@ -106,7 +107,7 @@ module.exports = (request, reply) => {
       })
       .then((childrenNodes) => {
         nodes = nodes.concat(childrenNodes)
-        reply(null, nodes)
+        respond()
       })
       .catch((error) =>
         reply(Boom.badImplementation(error), null)
@@ -138,7 +139,7 @@ module.exports = (request, reply) => {
       ) {
         // this is not an object page
         // return only category nodes
-        replyWithCategoryNodes()
+        respond()
       } else {
         if (path.length === 1 && isUuid.v4(path[0])) {
           // this is a path of style /<objectId>
