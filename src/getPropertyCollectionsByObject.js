@@ -3,7 +3,7 @@
 const app = require('ampersand-app')
 
 module.exports = (id) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     const sql = `
       SELECT
         ae.property_collection.*,
@@ -18,7 +18,7 @@ module.exports = (id) =>
     app.db.many(sql, [id])
       .then((data) => {
         if (data) return resolve(data)
-        reject(`no object_property_collections received from db`)
+        resolve([])
       })
-      .catch((error) => reject(error))
+      .catch(() => resolve([]))
   })

@@ -4,7 +4,7 @@ const app = require('ampersand-app')
 const getRelationsByORC = require('./getRelationsByORC.js')
 
 module.exports = (object_id) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     let relationCollections
     const sql = `
       SELECT
@@ -22,7 +22,7 @@ module.exports = (object_id) =>
         if (data) {
           relationCollections = data
         } else {
-          return reject(`no object_relation_collections received from db`)
+          return resolve([])
         }
         return Promise.all(relationCollections.map((oRC) =>
           getRelationsByORC(object_id, oRC.relation_collection_id))
@@ -36,5 +36,5 @@ module.exports = (object_id) =>
         })
         resolve(relationCollections)
       })
-      .catch((error) => reject(error))
+      .catch(() => resolve([]))
   })

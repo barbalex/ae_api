@@ -1,6 +1,7 @@
 'use strict'
 
 /* eslint max-len:0 */
+// TODO: test that object is included where necessary
 
 // 1. Load modules
 const Code = require('code')
@@ -22,6 +23,13 @@ describe('/node/{path}/{id?}', () => {
     const url = '/node/[]'
     server.inject({ method, url }, (res) => {
       expect(res.result.nodes.length).to.be.above(1)
+      done()
+    })
+  })
+  it(`should return null as object for path []`, (done) => {
+    const url = '/node/[]'
+    server.inject({ method, url }, (res) => {
+      expect(res.result.object).to.be.null()
       done()
     })
   })
@@ -157,33 +165,53 @@ describe('/node/{path}/{id?}', () => {
     }
   )
   it(
-    `should return more than 4 rows for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`,
+    `should return an object with id '9c84d038-5bc4-4327-8389-fe6423e14600' for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]`,
     (done) => {
-      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.object.id).to.equal('9c84d038-5bc4-4327-8389-fe6423e14600')
+        done()
+      })
+    }
+  )
+  it(
+    `should return more than 4 rows for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
       server.inject({ method, url }, (res) => {
         expect(res.result.nodes.length).to.be.above(3)
         done()
       })
     }
   )
-  it(`should return a root for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`, (done) => {
-    const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
+  it(
+    `should return an object with id '9c84d038-5bc4-4327-8389-fe6423e14600' for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.object.id).to.equal('9c84d038-5bc4-4327-8389-fe6423e14600')
+        done()
+      })
+    }
+  )
+  it(`should return a root for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`, (done) => {
+    const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
     server.inject({ method, url }, (res) => {
       const node = res.result.nodes.find((n) => n.id === 'root')
       expect(node).to.exist()
       done()
     })
   })
-  it(`should return a category for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`, (done) => {
-    const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
+  it(`should return a category for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`, (done) => {
+    const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
     server.inject({ method, url }, (res) => {
       const node = res.result.nodes.find((n) => n.type === 'category')
       expect(node).to.exist()
       done()
     })
   })
-  it(`should return a taxonomy for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`, (done) => {
-    const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
+  it(`should return a taxonomy for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`, (done) => {
+    const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
     server.inject({ method, url }, (res) => {
       const node = res.result.nodes.find((n) => n.type === 'taxonomy')
       expect(node).to.exist()
@@ -191,9 +219,9 @@ describe('/node/{path}/{id?}', () => {
     })
   })
   it(
-    `should return a taxonomy_object for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9C84D038-5BC4-4327-8389-FE6423E14600'`,
+    `should return a taxonomy_object for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
     (done) => {
-      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9C84D038-5BC4-4327-8389-FE6423E14600'
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
       server.inject({ method, url }, (res) => {
         const node = res.result.nodes.find((n) => n.type === 'taxonomy_object')
         expect(node).to.exist()

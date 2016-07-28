@@ -3,7 +3,7 @@
 const app = require('ampersand-app')
 
 module.exports = (object_id) =>
-  new Promise((resolve, reject) => {
+  new Promise((resolve) => {
     const sql = `
       SELECT
         ae.taxonomy.id,
@@ -27,7 +27,7 @@ module.exports = (object_id) =>
     app.db.many(sql, [object_id])
       .then((data) => {
         if (data) return resolve(data)
-        reject(`no object_taxonomies received from db`)
+        resolve([])
       })
-      .catch((error) => reject(error))
+      .catch(() => resolve([]))
   })

@@ -71,6 +71,9 @@ const getTaxonomiesByObject = require('./getTaxonomiesByObject.js')
 
 module.exports = (objectPassed) =>
   new Promise((resolve, reject) => {
+    if (!objectPassed) {
+      return resolve(null)
+    }
     const object = objectPassed
 
     getRelationCollectionsByObject(object.id)

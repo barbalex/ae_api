@@ -13,9 +13,9 @@ const getNodesTaxonomiesByName = require('../../getNodesTaxonomiesByName.js')
 const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
-const getTaxonomyObject = require('../../getTaxonomyObject.js')
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
+const buildObject = require('../../buildObject.js')
 
 module.exports = (request, reply) => {
   const { path } = request.params
@@ -23,7 +23,15 @@ module.exports = (request, reply) => {
   let nodes = []
   let object = null
 
-  const respond = () => reply(null, { nodes, object })
+  const respond = () => {
+    buildObject(object)
+      .then((objectBuilt) =>
+        reply(null, { nodes, object: objectBuilt })
+      )
+      .catch((error) =>
+        reply(Boom.badImplementation(error), null)
+      )
+  }
 
   const replyWithCategoryNode = () => {
     const categoryIds = nodes.map((c) => c.name)
