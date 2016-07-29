@@ -281,9 +281,9 @@ describe('/node/{path}/{id?}', () => {
     })
   })
   it(
-    `should return more than 4 rows for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    `should return more than 4 rows for path ["9c84d038-5bc4-4327-8389-fe6423e14600"]`,
     (done) => {
-      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      const url = '/node/["9c84d038-5bc4-4327-8389-fe6423e14600"]'
       server.inject({ method, url }, (res) => {
         expect(res.result.nodes.length).to.be.above(3)
         done()
@@ -291,9 +291,9 @@ describe('/node/{path}/{id?}', () => {
     }
   )
   it(
-    `should return an object with id '9c84d038-5bc4-4327-8389-fe6423e14600' for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    `should return an object with id '9c84d038-5bc4-4327-8389-fe6423e14600' for path ["9c84d038-5bc4-4327-8389-fe6423e14600"]`,
     (done) => {
-      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      const url = '/node/["9c84d038-5bc4-4327-8389-fe6423e14600"]'
       server.inject({ method, url }, (res) => {
         expect(res.result.object.id).to.equal('9c84d038-5bc4-4327-8389-fe6423e14600')
         done()
@@ -301,9 +301,9 @@ describe('/node/{path}/{id?}', () => {
     }
   )
   it(
-    `should return an namePath > 3 for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    `should return an namePath > 3 for path ["9c84d038-5bc4-4327-8389-fe6423e14600"]`,
     (done) => {
-      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      const url = '/node/["9c84d038-5bc4-4327-8389-fe6423e14600"]'
       server.inject({ method, url }, (res) => {
         expect(res.result.namePath.length).to.be.above(3)
         done()
@@ -311,9 +311,9 @@ describe('/node/{path}/{id?}', () => {
     }
   )
   it(
-    `should return an idPath > 3 for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    `should return an idPath > 3 for path ["9c84d038-5bc4-4327-8389-fe6423e14600"]`,
     (done) => {
-      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      const url = '/node/["9c84d038-5bc4-4327-8389-fe6423e14600"]'
       server.inject({ method, url }, (res) => {
         expect(res.result.idPath.length).to.be.above(3)
         done()
