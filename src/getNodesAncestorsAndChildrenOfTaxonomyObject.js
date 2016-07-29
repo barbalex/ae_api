@@ -85,15 +85,15 @@ module.exports = (id) =>
           ae.taxonomy_object
         WHERE
           ae.taxonomy_object.id = '${id}'
-      ) AND
+      )
       -- remove other taxonomy objects of same level
-      ae.taxonomy_object.parent_id <> (
-        SELECT parent_id
-        FROM ae.taxonomy_object
-        WHERE id = '${id}'
-      ) OR
+      -- AND ae.taxonomy_object.parent_id <> (
+      --   SELECT parent_id
+      --   FROM ae.taxonomy_object
+      --   WHERE id = '${id}'
+      -- ) OR
       -- add the taxonomy object queried
-      ae.taxonomy_object.id = '${id}' OR
+      OR ae.taxonomy_object.id = '${id}' OR
       -- add top level of taxonomy objects for the active taxonomy
       (
         ae.taxonomy_object.parent_id IS NULL AND
