@@ -86,25 +86,19 @@ module.exports = (id) =>
         WHERE
           ae.taxonomy_object.id = '${id}'
       )
-      -- remove other taxonomy objects of same level
-      -- AND ae.taxonomy_object.parent_id <> (
-      --   SELECT parent_id
-      --   FROM ae.taxonomy_object
-      --   WHERE id = '${id}'
-      -- ) OR
       -- add the taxonomy object queried
-      OR ae.taxonomy_object.id = '${id}' OR
+      OR ae.taxonomy_object.id = '${id}'
       -- add top level of taxonomy objects for the active taxonomy
-      (
+      OR (
         ae.taxonomy_object.parent_id IS NULL AND
         ae.taxonomy_object.taxonomy_id IN (
           SELECT taxonomy_id
           FROM ae.taxonomy_object
           WHERE id = '${id}'
         )
-      ) OR
+      )
       -- add all children
-      ae.taxonomy_object.parent_id = '${id}'
+      OR ae.taxonomy_object.parent_id = '${id}'
     `
     app.db.any(sql)
       .then((data) => {
