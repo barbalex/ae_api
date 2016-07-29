@@ -3,6 +3,7 @@
 /* eslint no-console:0 */
 
 const Boom = require('boom')
+const isUuid = require('is-uuid')
 const getNodesCategories = require('../../getNodesCategories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomyByCategoryName = require('../../getNodesChildrenOfTaxonomyByCategoryName.js')
@@ -159,8 +160,9 @@ module.exports = (request, reply) => {
         // this is not an object page
         // return only category nodes
         respond()
-      } else if (path.length === 0 && id) {
+      } else if (path.length === 1 && isUuid.v4(path[0])) {
         // this is a path of style /<objectId>
+        id = path[0]
         replyWithTaxonomyObjectNodeUsingObjectId()
         rebuildPath = true
       } else if (path.length === 1 && path[0] === 'index.html' && id) {
