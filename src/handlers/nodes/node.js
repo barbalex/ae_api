@@ -3,7 +3,6 @@
 /* eslint no-console:0 */
 
 const Boom = require('boom')
-const isUuid = require('is-uuid')
 const getNodesCategories = require('../../getNodesCategories.js')
 const getNodesChildrenOfTaxonomyObject = require('../../getNodesChildrenOfTaxonomyObject.js')
 const getNodesChildrenOfTaxonomyByCategoryName = require('../../getNodesChildrenOfTaxonomyByCategoryName.js')
@@ -21,7 +20,6 @@ const getNamePathByTaxonomyObjectId = require('../../getNamePathByTaxonomyObject
 module.exports = (request, reply) => {
   const { path } = request.params
   let { id } = request.params
-  const objectId = id
   let nodes = []
   let object = null
   let objectBuilt
@@ -124,7 +122,6 @@ module.exports = (request, reply) => {
       .then((ancestorNodes) => {
         nodes = nodes.concat(ancestorNodes)
         idPath = ancestorNodes.find((n) => n.id === id).path
-        console.log('handlers/node, idPath:', idPath)
         return getNodesChildrenOfTaxonomyObject(id)
       })
       .then((childrenNodes) => {
