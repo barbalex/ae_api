@@ -16,7 +16,7 @@ const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromOb
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
 const buildObject = require('../../buildObject.js')
-const getUrlPathByTaxonomyObjectId = require('../../getUrlPathByTaxonomyObjectId.js')
+const getNamePathByTaxonomyObjectId = require('../../getNamePathByTaxonomyObjectId.js')
 
 module.exports = (request, reply) => {
   const { path } = request.params
@@ -26,18 +26,19 @@ module.exports = (request, reply) => {
   let object = null
   let objectBuilt
   let rebuildPath = false
+  let idPath = null
 
   const respond = () => {
     buildObject(object)
       .then((data) => {
         objectBuilt = data
         if (rebuildPath) {
-          return getUrlPathByTaxonomyObjectId(id)
+          return getNamePathByTaxonomyObjectId(id)
         }
         return path
       })
-      .then((urlPath) =>
-        reply(null, { nodes, object: objectBuilt, urlPath })
+      .then((namePath) =>
+        reply(null, { nodes, object: objectBuilt, namePath, idPath })
       )
       .catch((error) =>
         reply(Boom.badImplementation(error), null)
@@ -122,6 +123,8 @@ module.exports = (request, reply) => {
       )
       .then((ancestorNodes) => {
         nodes = nodes.concat(ancestorNodes)
+        idPath = ancestorNodes.find((n) => n.id === id).path
+        console.log('handlers/node, idPath:', idPath)
         return getNodesChildrenOfTaxonomyObject(id)
       })
       .then((childrenNodes) => {

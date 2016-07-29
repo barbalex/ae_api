@@ -2,9 +2,9 @@
 
 const app = require('ampersand-app')
 
-module.exports = (taxId) =>
+module.exports = (id) =>
   new Promise((resolve) => {
-    if (taxId) {
+    if (id) {
       const sql = `
         SELECT
           ae.object.*
@@ -15,7 +15,7 @@ module.exports = (taxId) =>
         WHERE
           ae.taxonomy_object.id = $1
       `
-      app.db.one(sql, [taxId])
+      app.db.one(sql, id)
         .then((data) =>
           resolve(data)
         )

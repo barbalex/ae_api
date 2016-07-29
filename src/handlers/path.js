@@ -3,8 +3,8 @@
 const Boom = require('boom')
 const getObjectById = require('../getObjectById.js')
 const getTaxonomyId = require('../getTaxonomyId.js')
-const getUrlPathByObjectId = require('../getUrlPathByObjectId.js')
-const getUrlPathByObjectIdUsingStandardTaxonomy = require('../getUrlPathByObjectIdUsingStandardTaxonomy.js')
+const getNamePathByObjectId = require('../getNamePathByObjectId.js')
+const getNamePathByObjectIdUsingStandardTaxonomy = require('../getNamePathByObjectIdUsingStandardTaxonomy.js')
 
 module.exports = (request, reply) => {
   const { taxonomyId, objectId } = request.params
@@ -25,7 +25,7 @@ module.exports = (request, reply) => {
             ))
           )
           .then(() =>
-            getUrlPathByObjectId({ taxonomyId, objectId })
+            getNamePathByObjectId({ taxonomyId, objectId })
           )
           .then((data) =>
             reply(null, data)
@@ -34,7 +34,7 @@ module.exports = (request, reply) => {
             reply(Boom.badImplementation(error), null)
           )
       } else {
-        getUrlPathByObjectIdUsingStandardTaxonomy(objectId)
+        getNamePathByObjectIdUsingStandardTaxonomy(objectId)
           .then((data) => reply(null, data))
           .catch((error) =>
             reply(Boom.badImplementation(error), null)

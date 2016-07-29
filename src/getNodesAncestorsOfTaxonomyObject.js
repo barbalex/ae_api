@@ -12,6 +12,7 @@ module.exports = (id) =>
           ELSE parent_id
         END
         AS parent_id,
+        ae.taxonomy_object.object_id,
         ae.taxonomy_object.name,
         ae.taxonomy_object.taxonomy_id,
         ae.taxonomy.category,
@@ -80,13 +81,18 @@ module.exports = (id) =>
     `
     app.db.any(sql)
       .then((data) => {
-        const nodesAncestors = data.map((n) => ({
-          type: 'taxonomy_object',
-          id: n.id,
-          name: n.name,
-          parent_id: n.parent_id,
-          path: [n.category, n.taxonomy_id].concat(n.path).push(id)
-        }))
+        const nodesAncestors = data.map((n) => {
+          const path = [n.category, n.taxonomy_id].concat(n.path)
+          path.push(id)
+          return {
+            type: 'taxonomy_object',
+            id: n.id,
+            name: n.name,
+            parent_id: n.parent_id,
+            object_id: n.object_id,
+            path
+          }
+        })
         resolve(nodesAncestors)
       })
       .catch((error) => reject(error))
