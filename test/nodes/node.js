@@ -214,6 +214,16 @@ describe('/node/{path}/{id?}', () => {
       })
     }
   )
+  it(
+    `should return an idPath > 3 for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.idPath.length).to.be.above(3)
+        done()
+      })
+    }
+  )
   it(`should return a root for path ["Fauna","CSCF (2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`, (done) => {
     const url = '/node/["Fauna","CSCF%20(2009)","Aves","Passeriformes","Corvidae","Corvus%20corone%20(Raben(Nebel-)krähe)"]/9c84d038-5bc4-4327-8389-fe6423e14600'
     server.inject({ method, url }, (res) => {
@@ -301,6 +311,16 @@ describe('/node/{path}/{id?}', () => {
     }
   )
   it(
+    `should return an idPath > 3 for path [] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/[]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.idPath.length).to.be.above(3)
+        done()
+      })
+    }
+  )
+  it(
     `should return more than 4 rows for path ["index.html"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
     (done) => {
       const url = '/node/["index.html"]/9c84d038-5bc4-4327-8389-fe6423e14600'
@@ -326,6 +346,16 @@ describe('/node/{path}/{id?}', () => {
       const url = '/node/["index.html"]/9c84d038-5bc4-4327-8389-fe6423e14600'
       server.inject({ method, url }, (res) => {
         expect(res.result.namePath.length).to.be.above(3)
+        done()
+      })
+    }
+  )
+  it(
+    `should return an idPath > 3 for path ["index.html"] and id '9c84d038-5bc4-4327-8389-fe6423e14600'`,
+    (done) => {
+      const url = '/node/["index.html"]/9c84d038-5bc4-4327-8389-fe6423e14600'
+      server.inject({ method, url }, (res) => {
+        expect(res.result.idPath.length).to.be.above(3)
         done()
       })
     }
