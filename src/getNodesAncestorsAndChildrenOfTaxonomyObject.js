@@ -85,7 +85,8 @@ module.exports = (id) =>
                 id = '${id}'
             )
           UNION SELECT '${id}'
-        )
+        ) OR
+        ae.taxonomy_object.id = '${id}'
     `
     app.db.any(sql)
       .then((data) => {
