@@ -12,6 +12,7 @@ const getNodesAncestorsOfTaxonomyObject = require('../../getNodesAncestorsOfTaxo
 const getNodesTaxonomiesByName = require('../../getNodesTaxonomiesByName.js')
 const getCategoryOfTaxonomyObject = require('../../getCategoryOfTaxonomyObject.js')
 const getNodesTaxonomiesOfCategory = require('../../getNodesTaxonomiesOfCategory.js')
+const getNodesAncestorsAndChildrenOfTaxonomyObject = require('../../getNodesAncestorsAndChildrenOfTaxonomyObject.js')
 const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromObjectId.js')
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
@@ -113,20 +114,16 @@ module.exports = (request, reply) => {
       // get children
       .then((taxonomiesNodes) => {
         nodes = nodes.concat(taxonomiesNodes)
-        return getNodesAncestorsOfTaxonomyObject(id)
+        return getNodesAncestorsAndChildrenOfTaxonomyObject(id)
       })
       .catch(() =>
         reply(Boom.badRequest(
           `Es existiert kein Taxonomie-Objekt mit der id '${id}'`
         ))
       )
-      .then((ancestorNodes) => {
-        nodes = nodes.concat(ancestorNodes)
-        idPath = ancestorNodes.find((n) => n.id === id).path
-        return getNodesChildrenOfTaxonomyObject(id)
-      })
-      .then((childrenNodes) => {
-        nodes = nodes.concat(childrenNodes)
+      .then((ancestorAndChildrenNodes) => {
+        nodes = nodes.concat(ancestorAndChildrenNodes)
+        idPath = ancestorAndChildrenNodes.find((n) => n.id === id).path
         respond()
       })
       .catch((error) =>
