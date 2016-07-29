@@ -102,7 +102,9 @@ module.exports = (id) =>
           FROM ae.taxonomy_object
           WHERE id = '${id}'
         )
-      )
+      ) OR
+      -- add all children
+      ae.taxonomy_object.parent_id = '${id}'
     `
     app.db.any(sql)
       .then((data) => {
