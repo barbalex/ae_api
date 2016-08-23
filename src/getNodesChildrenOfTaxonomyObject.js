@@ -49,7 +49,7 @@ module.exports = (parentId) =>
           id: n.id,
           name: n.name,
           parent_id: parentId,
-          path: [n.category, n.taxonomy_id].concat(n.path)
+          path: [n.category, n.taxonomy_id].concat(n.path).concat(n.id)
         }))
         resolve(nodesChildren)
       })
