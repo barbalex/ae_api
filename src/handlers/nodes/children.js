@@ -25,8 +25,8 @@ module.exports = (request, reply) => {
             ))
           }
           getNodesChildrenOfCategory(id)
-            .then((children) =>
-              reply(null, children)
+            .then((response) =>
+              reply(null, response)
             )
             .catch((error) =>
               reply(Boom.badImplementation(error), null)
@@ -49,7 +49,7 @@ module.exports = (request, reply) => {
         // get children
         .then(() => getNodesChildrenOfTaxonomy(id))
         .then((children) => {
-          if (children && children.length) {
+          if (!!children && (children.length || children.length === 0)) {
             reply(null, children)
           } else {
             reply(Boom.badImplementation('no children received'), null)
