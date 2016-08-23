@@ -76,7 +76,7 @@ module.exports = (request, reply) => {
         .then(() =>
           getNodesChildrenOfTaxonomyObject(id)
             .then((children) => {
-              if (children && children.length) {
+              if (!!children && (children.length || children.length === 0)) {
                 reply(null, children)
               } else {
                 reply(Boom.badImplementation('no children received'), null)
