@@ -1,9 +1,10 @@
-import app from 'ampersand-app'
-import getIdsOfSynonymsFromTaxonomicRcs from './getIdsOfSynonymsFromTaxonomicRcs.js'
-import buildObject from './buildObject'
+const app = require('ampersand-app')
+const getIdsOfSynonymsFromTaxonomicRcs = require('./getIdsOfSynonymsFromTaxonomicRcs.js')
+const buildObject = require('./buildObject')
 
-export default (object) => new Promise((resolve, reject) => {
+const buildSynonymObjects = (object) => new Promise((resolve, reject) => {
   if (
+    object &&
     object.Beziehungssammlungen &&
     object.Beziehungssammlungen.length &&
     object.Beziehungssammlungen.length > 0
@@ -35,3 +36,5 @@ export default (object) => new Promise((resolve, reject) => {
     resolve([])
   }
 })
+
+module.exports = buildSynonymObjects

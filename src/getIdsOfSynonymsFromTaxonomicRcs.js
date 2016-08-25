@@ -3,7 +3,7 @@
  * returns an array of guids of synonyms
  */
 
-export default (taxRcs) => {
+const getIdsOfSynonymsFromTaxonomicRcs = (taxRcs) => {
   const guidsOfSynonyms = []
   taxRcs.forEach((rc) => {
     if (
@@ -24,3 +24,5 @@ export default (taxRcs) => {
   })
   return guidsOfSynonyms
 }
+
+module.exports = getIdsOfSynonymsFromTaxonomicRcs
