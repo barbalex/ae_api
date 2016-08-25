@@ -22,6 +22,7 @@ module.exports = (request, reply) => {
   let { id } = request.params
   let nodes = []
   let object = null
+  const synonymObjects = []
   let objectBuilt
   let rebuildPath = false
   let idPath = null
@@ -36,7 +37,16 @@ module.exports = (request, reply) => {
         return path
       })
       .then((namePath) =>
-        reply(null, { nodes, object: objectBuilt, namePath, idPath })
+        reply(
+          null,
+          {
+            nodes,
+            object: objectBuilt,
+            synonymObjects,
+            namePath,
+            idPath
+          }
+        )
       )
       .catch((error) =>
         reply(Boom.badImplementation(error), null)
@@ -98,6 +108,7 @@ module.exports = (request, reply) => {
   }
 
   const replyWithTaxonomyObjectNodes = () => {
+    // TODO: get synonyms
     getObjectOfTaxonomyObject(id)
       .then((data) => {
         object = data
