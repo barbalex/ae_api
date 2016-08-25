@@ -29,6 +29,7 @@ module.exports = (parentId) =>
         ae.taxonomy_object.id,
         ae.taxonomy_object.name,
         ae.taxonomy_object.taxonomy_id,
+        ae.taxonomy_object.object_id,
         ae.taxonomy.category,
         tree.ancestors as path
       FROM
@@ -49,6 +50,7 @@ module.exports = (parentId) =>
           id: n.id,
           name: n.name,
           parent_id: parentId,
+          object_id: n.object_id,
           path: [n.category, n.taxonomy_id].concat(n.path).concat(n.id)
         }))
         resolve(nodesChildren)
