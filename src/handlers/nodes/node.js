@@ -15,6 +15,7 @@ const getTaxonomyObjectIdFromObjectId = require('../../getTaxonomyObjectIdFromOb
 const getTaxonomyObjectFromPath = require('../../getTaxonomyObjectFromPath.js')
 const getObjectOfTaxonomyObject = require('../../getObjectOfTaxonomyObject.js')
 const buildObject = require('../../buildObject.js')
+const buildSynonymObjects = require('../../buildSynonymObjects.js')
 const getNamePathByTaxonomyObjectId = require('../../getNamePathByTaxonomyObjectId.js')
 
 module.exports = (request, reply) => {
@@ -26,6 +27,7 @@ module.exports = (request, reply) => {
   let objectBuilt
   let rebuildPath = false
   let idPath = null
+  let namePath = null
 
   const respond = () => {
     buildObject(object)
@@ -36,7 +38,11 @@ module.exports = (request, reply) => {
         }
         return path
       })
-      .then((namePath) =>
+      .then((path) => {
+        namePath = path
+        return buildSynonymObjects(object)
+      })
+      .then(() =>
         reply(
           null,
           {

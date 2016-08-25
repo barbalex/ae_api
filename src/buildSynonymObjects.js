@@ -1,5 +1,6 @@
 import app from 'ampersand-app'
 import getIdsOfSynonymsFromTaxonomicRcs from './getIdsOfSynonymsFromTaxonomicRcs.js'
+import buildObject from './buildObject'
 
 export default (object) => new Promise((resolve, reject) => {
   if (
@@ -23,10 +24,10 @@ export default (object) => new Promise((resolve, reject) => {
         id IN ($1)
     `
     app.db.any(sql, guidsOfSynonyms)
-      .then((result) => {
-        const synonymObjects = result.rows.map((row) => row.doc)
-        resolve(synonymObjects)
-      })
+      .then((synonymObjects) =>
+        Promise.all(synonymObjects.map((so) => buildObject(so)))
+      )
+      .then((synonymObjectsBuilt) => resolve(synonymObjectsBuilt))
       .catch((error) =>
         reject('object.js: error fetching synonym objects:', error)
       )
