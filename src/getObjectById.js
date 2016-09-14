@@ -12,7 +12,7 @@ const sql = `
 `
 
 module.exports = (id) =>
-  app.db.one(sql, [id])
+  app.db.one(sql, id)
     .then((data) =>
       data
     )
