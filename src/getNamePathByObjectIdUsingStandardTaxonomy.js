@@ -6,14 +6,13 @@
 const app = require('ampersand-app')
 const getTaxonomyObjectFromObjectId = require('./getTaxonomyObjectFromObjectId.js')
 
-module.exports = (objectId) =>
-  new Promise((resolve, reject) => {
-    let path
-    let pathWithIds
-    let taxonomyId
-    let taxonomyName
-    let category
-    const sql = `
+module.exports = (objectId) => {
+  let path
+  let pathWithIds
+  let taxonomyId
+  let taxonomyName
+  let category
+  const sql = `
     SELECT
       id,
       name
@@ -53,39 +52,41 @@ module.exports = (objectId) =>
           object_id = $2
       )
     `
-    app.db.one(`
-      SELECT
-        ae.taxonomy.id,
-        ae.taxonomy.name,
-        ae.taxonomy.category
-      FROM
-        ae.taxonomy
-        INNER JOIN
-          ae.taxonomy_object
-          ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
-      WHERE
-        ae.taxonomy_object.object_id = $1 AND
-        ae.taxonomy.is_category_standard = 'true'
-      `,
-      objectId
-    )
-      .then((result) => {
-        taxonomyId = result.id
-        taxonomyName = result.name
-        category = result.category
-        return app.db.many(sql, [taxonomyId, objectId])
-      })
-      .then((data) => {
-        pathWithIds = data
-        path = pathWithIds.map((p) => p.name)
-        return getTaxonomyObjectFromObjectId(objectId)
-      })
-      .then((taxObject) => {
-        path.unshift(taxonomyName)
-        path.unshift(category)
-        path.push(taxObject.name)
-        // path.unshift('root')
-        resolve(path)
-      })
-      .catch((error) => reject(error))
-  })
+  return app.db.one(`
+    SELECT
+      ae.taxonomy.id,
+      ae.taxonomy.name,
+      ae.taxonomy.category
+    FROM
+      ae.taxonomy
+      INNER JOIN
+        ae.taxonomy_object
+        ON ae.taxonomy_object.taxonomy_id = ae.taxonomy.id
+    WHERE
+      ae.taxonomy_object.object_id = $1 AND
+      ae.taxonomy.is_category_standard = 'true'
+    `,
+    objectId
+  )
+    .then((result) => {
+      taxonomyId = result.id
+      taxonomyName = result.name
+      category = result.category
+      return app.db.many(sql, [taxonomyId, objectId])
+    })
+    .then((data) => {
+      pathWithIds = data
+      path = pathWithIds.map((p) => p.name)
+      return getTaxonomyObjectFromObjectId(objectId)
+    })
+    .then((taxObject) => {
+      path.unshift(taxonomyName)
+      path.unshift(category)
+      path.push(taxObject.name)
+      // path.unshift('root')
+      return path
+    })
+    .catch((error) => {
+      throw error
+    })
+}

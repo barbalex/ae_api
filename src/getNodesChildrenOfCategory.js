@@ -2,28 +2,29 @@
 
 const app = require('ampersand-app')
 
+const sql = `
+  SELECT
+    'taxonomy' as type,
+    id,
+    name,
+    category AS parent_id
+  FROM
+    ae.taxonomy
+  WHERE
+    category = $1
+  ORDER BY
+    name
+`
+
 module.exports = (category) =>
-  new Promise((resolve, reject) => {
-    const sql = `
-      SELECT
-        'taxonomy' as type,
-        id,
-        name,
-        category AS parent_id
-      FROM
-        ae.taxonomy
-      WHERE
-        category = '${category}'
-      ORDER BY
-        name
-    `
-    app.db.any(sql)
-      .then((data) => {
-        data.forEach((d) => {
-          d.path = [d.parent_id, d.id]
-        })
-        if (data) return resolve(data)
-        reject(`no data received from db`)
+  app.db.any(sql, category)
+    .then((data) => {
+      data.forEach((d) => {
+        d.path = [d.parent_id, d.id]
       })
-      .catch((error) => reject(error))
-  })
+      if (data) return data
+      throw new Error(`no data received from db`)
+    })
+    .catch((error) => {
+      throw error
+    })

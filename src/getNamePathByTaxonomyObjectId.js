@@ -6,12 +6,11 @@
 const app = require('ampersand-app')
 const getTaxonomyObjectFromId = require('./getTaxonomyObjectFromId.js')
 
-module.exports = (id) =>
-  new Promise((resolve) => {
-    let path
-    let pathWithIds
-    let taxObject
-    const sql = `
+module.exports = (id) => {
+  let path
+  let pathWithIds
+  let taxObject
+  const sql = `
     SELECT
       id,
       name
@@ -49,34 +48,34 @@ module.exports = (id) =>
           id = $1
       )
     `
-    app.db.many(sql, id)
-      .then((data) => {
-        pathWithIds = data
-        path = pathWithIds.map((p) => p.name)
-        return getTaxonomyObjectFromId(id)
-      })
-      .then((taxObjectPassed) => {
-        taxObject = taxObjectPassed
-        // get Taxonomy
-        return app.db.one(`
-          SELECT
-            ae.taxonomy.name,
-            ae.taxonomy.category
-          FROM
-            ae.taxonomy
-            INNER JOIN ae.taxonomy_object
-            ON ae.taxonomy.id = ae.taxonomy_object.taxonomy_id
-          WHERE
-            ae.taxonomy_object.id = $1
-          `,
-          id
-        )
-      })
-      .then((result) => {
-        path.unshift(result.name)
-        path.unshift(result.category)
-        path.push(taxObject.name)
-        resolve(path)
-      })
-      .catch(() => resolve(null))
-  })
+  return app.db.many(sql, id)
+    .then((data) => {
+      pathWithIds = data
+      path = pathWithIds.map((p) => p.name)
+      return getTaxonomyObjectFromId(id)
+    })
+    .then((taxObjectPassed) => {
+      taxObject = taxObjectPassed
+      // get Taxonomy
+      return app.db.one(`
+        SELECT
+          ae.taxonomy.name,
+          ae.taxonomy.category
+        FROM
+          ae.taxonomy
+          INNER JOIN ae.taxonomy_object
+          ON ae.taxonomy.id = ae.taxonomy_object.taxonomy_id
+        WHERE
+          ae.taxonomy_object.id = $1
+        `,
+        id
+      )
+    })
+    .then((result) => {
+      path.unshift(result.name)
+      path.unshift(result.category)
+      path.push(taxObject.name)
+      return path
+    })
+    .catch(() => null)
+}
