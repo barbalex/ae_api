@@ -2,20 +2,21 @@
 
 const app = require('ampersand-app')
 
+const sql = `
+  SELECT
+    id
+  FROM
+    ae.taxonomy
+  WHERE
+    id = $1
+`
+
 module.exports = (id) =>
-  new Promise((resolve, reject) => {
-    const sql = `
-      SELECT
-        id
-      FROM
-        ae.taxonomy
-      WHERE
-        id = '${id}'
-    `
-    app.db.one(sql)
-      .then((data) => {
-        if (data) return resolve(data)
-        reject(`no data received from db`)
-      })
-      .catch((error) => reject(error))
-  })
+  app.db.one(sql, id)
+    .then((data) => {
+      if (data) return data
+      throw new Error(`no data received from db`)
+    })
+    .catch((error) => {
+      throw error
+    })
