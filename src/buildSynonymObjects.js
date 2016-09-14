@@ -2,7 +2,7 @@ const app = require('ampersand-app')
 const getIdsOfSynonymsFromTaxonomicRcs = require('./getIdsOfSynonymsFromTaxonomicRcs.js')
 const buildObject = require('./buildObject')
 
-const buildSynonymObjects = (object) => new Promise((resolve, reject) => {
+const buildSynonymObjects = (object) => {
   if (
     object &&
     object.Beziehungssammlungen &&
@@ -24,17 +24,16 @@ const buildSynonymObjects = (object) => new Promise((resolve, reject) => {
       WHERE
         id IN ($1)
     `
-    app.db.any(sql, guidsOfSynonyms)
+    return app.db.any(sql, guidsOfSynonyms)
       .then((synonymObjects) =>
         Promise.all(synonymObjects.map((so) => buildObject(so)))
       )
-      .then((synonymObjectsBuilt) => resolve(synonymObjectsBuilt))
-      .catch((error) =>
-        reject('object.js: error fetching synonym objects:', error)
-      )
-  } else {
-    resolve([])
+      .then((synonymObjectsBuilt) => synonymObjectsBuilt)
+      .catch((error) => {
+        throw ('object.js: error fetching synonym objects:', error)
+      })
   }
-})
+  return []
+}
 
 module.exports = buildSynonymObjects

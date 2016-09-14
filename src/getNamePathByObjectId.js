@@ -6,12 +6,11 @@
 const app = require('ampersand-app')
 const getTaxonomyObjectFromObjectId = require('./getTaxonomyObjectFromObjectId.js')
 
-module.exports = ({ taxonomyId, objectId }) =>
-  new Promise((resolve, reject) => {
-    let path
-    let pathWithIds
-    let taxObject
-    const sql = `
+module.exports = ({ taxonomyId, objectId }) => {
+  let path
+  let pathWithIds
+  let taxObject
+  const sql = `
     SELECT
       id,
       name
@@ -51,33 +50,35 @@ module.exports = ({ taxonomyId, objectId }) =>
           object_id = $2
       )
     `
-    app.db.many(sql, [taxonomyId, objectId])
-      .then((data) => {
-        pathWithIds = data
-        path = pathWithIds.map((p) => p.name)
-        return getTaxonomyObjectFromObjectId(objectId)
-      })
-      .then((taxObjectPassed) => {
-        taxObject = taxObjectPassed
-        // get Taxonomy
-        return app.db.one(`
-          SELECT
-            name,
-            category
-          FROM
-            ae.taxonomy
-          WHERE
-            id = $1
-          `,
-          taxonomyId
-        )
-      })
-      .then((result) => {
-        path.unshift(result.name)
-        path.unshift(result.category)
-        path.push(taxObject.name)
-        // path.unshift('root')
-        resolve(path)
-      })
-      .catch((error) => reject(error))
-  })
+  return app.db.many(sql, [taxonomyId, objectId])
+    .then((data) => {
+      pathWithIds = data
+      path = pathWithIds.map((p) => p.name)
+      return getTaxonomyObjectFromObjectId(objectId)
+    })
+    .then((taxObjectPassed) => {
+      taxObject = taxObjectPassed
+      // get Taxonomy
+      return app.db.one(`
+        SELECT
+          name,
+          category
+        FROM
+          ae.taxonomy
+        WHERE
+          id = $1
+        `,
+        taxonomyId
+      )
+    })
+    .then((result) => {
+      path.unshift(result.name)
+      path.unshift(result.category)
+      path.push(taxObject.name)
+      // path.unshift('root')
+      return path
+    })
+    .catch((error) => {
+      throw error
+    })
+}

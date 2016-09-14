@@ -42,7 +42,7 @@ module.exports = (request, reply) => {
         return buildSynonymObjects(object)
       })
       .then((synonymObjects) => {
-        console.log('handlers/node, synonymObjects:', synonymObjects)
+        // console.log('handlers/node, synonymObjects:', synonymObjects)
         reply(
           null,
           {
