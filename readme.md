@@ -13,9 +13,9 @@ Es ist noch im Aufbau. Künftig soll es enhalten:
 * Schnittstellen für andere Anwendungen (EvAB, ALT, apflora.ch)
 
 ## Datenstruktur
-
+![Datenstruktur](/etc/structure_relational.png?raw=true "Datenstruktur")
 
 ## Features:
 
 * die ganze API wird validiert
-* unter [http://arteigenschaften.ch/api](http://arteigenschaften.ch/api) ist die API dokumentiert (erst nutzbar, wenn dieses Projekt live ist) 
+* unter [http://arteigenschaften.ch/api](http://arteigenschaften.ch/api) ist die API dokumentiert (erst nutzbar, wenn dieses Projekt live ist)
