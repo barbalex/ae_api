@@ -39,7 +39,7 @@
     "vision": "4.1.0"
   },
   "devDependencies": {
-    "babel-eslint": "6.1.2",
+    "babel-eslint": "7.2.3",
     "code": "3.0.2",
     "del": "2.2.2",
     "eslint": "3.19.0",
