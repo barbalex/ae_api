@@ -23,7 +23,7 @@
   "dependencies": {
     "ampersand-app": "2.0.0",
     "bcrypt": "0.8.7",
-    "bluebird": "3.4.2",
+    "bluebird": "3.5.0",
     "boom": "3.2.2",
     "glob": "7.0.6",
     "hapi": "14.2.0",
